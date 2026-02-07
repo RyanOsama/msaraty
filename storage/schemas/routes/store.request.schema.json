@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Create Route Request",
+  "description": "Data required to create a new route",
+  "type": "object",
+  "required": ["route_name"],
+  "properties": {
+    "route_name": {
+      "type": "string",
+      "maxLength": 255
+    }
+  },
+  "additionalProperties": false
+}

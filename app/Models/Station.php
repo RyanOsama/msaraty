@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Station extends Model
 {
-    protected $fillable = ['name', 'location_x', 'location_y', 'description'];
+    protected $fillable = ['station_name', 'location_x', 'location_y', 'description'];
 
     public function routes()
     {

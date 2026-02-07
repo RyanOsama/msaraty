@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Attach Stations To Route Response",
+  "description": "Response after attaching stations to a route",
+  "type": "object",
+  "required": ["message", "route_id", "stations"],
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "route_id": {
+      "type": "integer"
+    },
+    "stations": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    }
+  },
+  "additionalProperties": false
+}

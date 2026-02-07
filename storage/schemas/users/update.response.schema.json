@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Update User Response",
+  "description": "Response returned after updating a user",
+  "type": "object",
+  "required": ["message", "user"],
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "user": {
+      "type": "object",
+      "required": ["id", "username", "role_id", "status"],
+      "properties": {
+        "id": { "type": "integer" },
+        "username": { "type": "string" },
+        "role_id": { "type": "integer" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

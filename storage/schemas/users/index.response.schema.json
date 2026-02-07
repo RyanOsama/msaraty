@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Users List Response",
+  "description": "Response returned when listing all users",
+  "type": "object",
+  "required": ["users"],
+  "properties": {
+    "users": {
+      "type": "array",
+      "description": "List of users",
+      "items": {
+        "type": "object",
+        "required": ["id", "username", "role_id", "status", "created_at"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username"
+          },
+          "role_id": {
+            "type": "integer",
+            "description": "Role ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "rejected"]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "User creation date",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -19,11 +19,11 @@ class RouteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'route_name' => ['required', 'string', 'max:255'],
         ]);
 
         Route::create([
-            'name' => $request->name,
+            'route_name' => $request->route_name,
         ]);
 
         return redirect()->back()->with('success', 'تم إضافة الخط');
@@ -33,11 +33,11 @@ class RouteController extends Controller
     public function update(Request $request, Route $route)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'route_name' => ['required', 'string', 'max:255'],
         ]);
 
         $route->update([
-            'name' => $request->name,
+            'route_name' => $request->route_name,
         ]);
 
         return redirect()->back()->with('success', 'تم التعديل');

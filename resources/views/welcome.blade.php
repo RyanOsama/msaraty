@@ -122,7 +122,7 @@
         <!-- إضافة خط -->
         <form class="d-flex gap-2 mb-3" method="POST" action="{{ route('admin.routes.store') }}">
             @csrf
-            <input class="form-control" name="name" placeholder="اسم الخط" required>
+            <input class="form-control" name="route_name" placeholder="اسم الخط" required>
             <button class="btn btn-success">إضافة</button>
         </form>
 
@@ -148,8 +148,8 @@
                         <td>
                             <input
                                 class="form-control"
-                                name="name"
-                                value="{{ $route->name }}"
+                                name="route_name"
+                                value="{{ $route->route_name }}"
                             >
                         </td>
 
@@ -192,7 +192,7 @@
         <form class="row g-2 mb-3" method="POST" action="{{ route('admin.stations.store') }}">
             @csrf
             <div class="col">
-                <input class="form-control" name="name" placeholder="اسم المحطة" required>
+                <input class="form-control" name="station_name" placeholder="اسم المحطة" required>
             </div>
             <div class="col">
                 <input class="form-control" name="location_x" placeholder="X" required>
@@ -231,7 +231,7 @@
 
                         <td>{{ $station->id }}</td>
                         <td>
-                            <input class="form-control" name="name" value="{{ $station->name }}">
+                            <input class="form-control" name="station_name" value="{{ $station->station_name }}">
                         </td>
                         <td>
                             <input class="form-control" name="location_x" value="{{ $station->location_x }}">
@@ -290,7 +290,7 @@
                 <select class="form-select" name="route_id" required>
                     <option value="">-- اختر خط --</option>
                     @foreach(\App\Models\Route::all() as $route)
-                        <option value="{{ $route->id }}">{{ $route->name }}</option>
+                        <option value="{{ $route->id }}">{{ $route->route_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -310,7 +310,7 @@
                                 id="station_{{ $station->id }}"
                             >
                             <label class="form-check-label" for="station_{{ $station->id }}">
-                                {{ $station->name }}
+                                {{ $station->station_name }}
                             </label>
                         </div>
                     @endforeach
@@ -343,7 +343,7 @@
             <div class="mb-4">
 
                 <h5 class="fw-bold text-success">
-                    🛣️ خط {{ $route->name }}
+                    🛣️ خط {{ $route->route_name }}
                 </h5>
 
                 <!-- جدول المحطات -->
@@ -360,7 +360,7 @@
                         @foreach($route->stations as $station)
                             <tr>
                                 <td>{{ $station->id }}</td>
-                                <td>{{ $station->name }}</td>
+                                <td>{{ $station->station_name }}</td>
                                 <td>
                                    <form
     method="POST"
@@ -410,7 +410,7 @@
                     id="st_{{ $station->id }}"
                 >
                 <label class="form-check-label" for="st_{{ $station->id }}">
-                    {{ $station->name }}
+                    {{ $station->station_name }}
                 </label>
             </div>
         @endforeach

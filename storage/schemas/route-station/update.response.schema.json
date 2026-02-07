@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sync Stations Response",
+  "description": "Response returned after successfully syncing stations to a route. All previous station links are replaced.",
+  "type": "object",
+  "required": ["message", "route_id", "stations"],
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Operation result message"
+    },
+    "route_id": {
+      "type": "integer",
+      "description": "Route ID that was updated"
+    },
+    "stations": {
+      "type": "array",
+      "description": "List of stations currently linked to the route after sync",
+      "items": {
+        "type": "object",
+        "required": ["id", "station_name"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Station ID"
+          },
+          "station_name": {
+            "type": "string",
+            "description": "Station name"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "message": "تم تحديث محطات الخط بنجاح",
+      "route_id": 14,
+      "stations": [
+        { "id": 17, "station_name": "الصداع" },
+        { "id": 19, "station_name": "برع السده" },
+        { "id": 22, "station_name": "غيل باوزير" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Login Request",
+  "description": "Data required to login a user",
+  "type": "object",
+  "required": ["username", "password"],
+  "properties": {
+    "username": {
+      "type": "string",
+      "description": "Username"
+    },
+    "password": {
+      "type": "string",
+      "description": "User password"
+    }
+  },
+  "additionalProperties": false
+}

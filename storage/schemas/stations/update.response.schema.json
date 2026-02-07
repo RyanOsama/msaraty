@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Update Station Response",
+  "description": "Response returned after updating a station",
+  "type": "object",
+  "required": ["message", "station"],
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "station": {
+      "type": "object",
+      "required": [
+        "id",
+        "station_name",
+        "location_x",
+        "location_y",
+        "description",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": { "type": "integer" },
+        "station_name": { "type": "string" },
+        "location_x": { "type": "number" },
+        "location_y": { "type": "number" },
+        "description": {
+          "type": ["string", "null"]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

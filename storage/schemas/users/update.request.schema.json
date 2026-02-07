@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Update User Request",
+  "description": "Data required to update a user",
+  "type": "object",
+  "required": ["username", "role_id", "status"],
+  "properties": {
+    "username": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "role_id": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected"]
+    }
+  },
+  "additionalProperties": false
+}

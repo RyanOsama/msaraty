@@ -15,7 +15,7 @@ class StationController extends Controller
     {
         $stations = Station::select(
                 'id',
-                'name',
+                'station_name',
                 'location_x',
                 'location_y',
                 'description',
@@ -35,14 +35,14 @@ class StationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
+            'station_name'        => 'required|string|max:255',
             'location_x'  => 'required|numeric',
             'location_y'  => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
         $station = Station::create([
-            'name'        => $request->name,
+            'station_name'        => $request->station_name,
             'location_x'  => $request->location_x,
             'location_y'  => $request->location_y,
             'description' => $request->description,
@@ -68,14 +68,14 @@ class StationController extends Controller
         }
 
         $request->validate([
-            'name'        => 'required|string|max:255',
+            'station_name'        => 'required|string|max:255',
             'location_x'  => 'required|numeric',
             'location_y'  => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
         $station->update([
-            'name'        => $request->name,
+            'station_name'        => $request->station_name,
             'location_x'  => $request->location_x,
             'location_y'  => $request->location_y,
             'description' => $request->description,

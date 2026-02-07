@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sync Stations to Route Request",
+  "description": "Replace all stations linked to a specific route. The route ID is provided in the URL path.",
+  "type": "object",
+  "required": ["station_ids"],
+  "properties": {
+    "station_ids": {
+      "type": "array",
+      "description": "List of existing station IDs that will be linked to the route. All previous links will be removed.",
+      "minItems": 1,
+      "items": {
+        "type": "integer",
+        "description": "Station ID (must exist in stations table)"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "station_ids": [17, 19, 22]
+    }
+  ]
+}

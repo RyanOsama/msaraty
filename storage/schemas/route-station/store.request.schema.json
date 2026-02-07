@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Attach Stations To Route Request",
+  "description": "Attach multiple stations to a single route",
+  "type": "object",
+  "required": ["route_id", "station_ids"],
+  "properties": {
+    "route_id": {
+      "type": "integer",
+      "description": "Route ID"
+    },
+    "station_ids": {
+      "type": "array",
+      "description": "List of station IDs",
+      "minItems": 1,
+      "items": {
+        "type": "integer"
+      }
+    }
+  },
+  "additionalProperties": false
+}

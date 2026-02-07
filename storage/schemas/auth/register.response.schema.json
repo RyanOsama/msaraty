@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Register Response",
+  "description": "Response returned after successful user registration",
+  "type": "object",
+  "required": ["id", "username", "role_id", "status"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "User ID"
+    },
+    "username": {
+      "type": "string",
+      "description": "Registered username"
+    },
+    "role_id": {
+      "type": "integer",
+      "description": "User role ID"
+    },
+    "status": {
+      "type": "string",
+      "description": "User account status",
+      "enum": ["pending", "approved", "rejected"]
+    }
+  },
+  "additionalProperties": false
+}

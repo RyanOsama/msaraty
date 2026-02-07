@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Login Response",
+  "description": "Response returned after successful user login",
+  "type": "object",
+  "required": ["user"],
+  "properties": {
+    "user": {
+      "type": "object",
+      "required": ["username", "role_id", "status"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username"
+        },
+        "role_id": {
+          "type": "integer",
+          "description": "User role ID"
+        },
+        "status": {
+          "type": "string",
+          "description": "User account status",
+          "enum": ["pending", "approved", "rejected"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

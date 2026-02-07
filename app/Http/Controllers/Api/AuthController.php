@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Http\Requests\UserRequest;
+use App\Http\Requests\LoginRequest;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -17,20 +19,9 @@ class AuthController extends Controller
     /**
      * داله انشاء مستخدم من التطيبق
      */
-   public function register(Request $request)
+   public function register(UserRequest $request)
 {
-    $request->validate([
-        'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-        'password' => [
-            'required',
-          
-            'min:8', 
-        ],
-        'role_id'  => ['required', 'exists:roles,id'],
-    ], [
-        'username.unique' => 'اسم المستخدم مستخدم بالفعل',
-        'password.min'    => 'كلمة المرور يجب أن تكون 9 أحرف أو أكثر',
-    ]);
+    
 
     $user = User::create([
         'username' => $request->username,
@@ -60,12 +51,9 @@ class AuthController extends Controller
 }
   
 //login user
-public function login(Request $request)
+public function login(LoginRequest $request)
 {
-    $request->validate([
-        'username' => 'required',
-        'password' => 'required',
-    ]);
+    
 
     if (!Auth::attempt($request->only('username', 'password'))) {
         return response()->json([
@@ -76,7 +64,6 @@ public function login(Request $request)
     $user = Auth::user();
      //ينفع عند صابر
         return response()->json([
-            'status' => $user->status, // pending | approved
             'user'   => [
                 'username' => $user->username,
                 'role_id'  => $user->role_id,

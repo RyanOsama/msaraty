@@ -17,14 +17,14 @@ class StationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'station_name' => 'required|string|max:255',
             'location_x' => 'required|numeric',
             'location_y' => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
         Station::create($request->only([
-            'name',
+            'station_name',
             'location_x',
             'location_y',
             'description',
@@ -36,14 +36,14 @@ class StationController extends Controller
     public function update(Request $request, Station $station)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'station_name' => 'required|string|max:255',
             'location_x' => 'required|numeric',
             'location_y' => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
         $station->update($request->only([
-            'name',
+            'station_name',
             'location_x',
             'location_y',
             'description',
