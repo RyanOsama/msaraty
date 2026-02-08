@@ -1,34 +1,53 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Route Station List Response",
-  "description": "List of station-route relations",
+  "title": "Routes Stations Index Response",
+  "description": "Response schema for listing all routes with their related stations",
   "type": "object",
   "required": ["data"],
+  "additionalProperties": false,
   "properties": {
     "data": {
       "type": "array",
       "items": {
         "type": "object",
         "required": [
-          "id",
-          "station_id",
-          "station_name",
           "route_id",
-          "route_name"
+          "route_name",
+          "stations"
         ],
+        "additionalProperties": false,
         "properties": {
-          "id": { "type": "integer" },
-          "station_id": { "type": "integer" },
-          "station_name": {
-            "type": ["string", "null"]
+          "route_id": {
+            "type": "integer"
           },
-          "route_id": { "type": "integer" },
           "route_name": {
             "type": ["string", "null"]
+          },
+          "stations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "station_id",
+                "station_name",
+                "order"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "station_id": {
+                  "type": "integer"
+                },
+                "station_name": {
+                  "type": ["string", "null"]
+                },
+                "order": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }

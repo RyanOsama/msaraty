@@ -79,6 +79,8 @@ Route::delete('/stations/{id}', [StationController::class, 'destroy']);
 use App\Http\Controllers\Api\RouteStationController;
 
 Route::get('/route-stations', [RouteStationController::class, 'index']);
+
 Route::post('/route-stations', [RouteStationController::class, 'store']);
-Route::put('/routes/{route}/stations', [RouteStationController::class, 'update']);
-Route::delete('/route-stations/{id}', [RouteStationController::class, 'destroy']);
+Route::put('/route-stations/order', [RouteStationController::class, 'updateOrder']);
+Route::put('/route-stations/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
+Route::delete('/route-stations', [RouteStationController::class, 'destroy']);

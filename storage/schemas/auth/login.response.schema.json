@@ -3,11 +3,16 @@
   "title": "Login Response",
   "description": "Response returned after successful user login",
   "type": "object",
-  "required": ["user"],
+  "required": ["status", "user"],
   "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected"],
+      "description": "User account status"
+    },
     "user": {
       "type": "object",
-      "required": ["username", "role_id", "status"],
+      "required": ["username", "role_id"],
       "properties": {
         "username": {
           "type": "string",
@@ -16,13 +21,9 @@
         "role_id": {
           "type": "integer",
           "description": "User role ID"
-        },
-        "status": {
-          "type": "string",
-          "description": "User account status",
-          "enum": ["pending", "approved", "rejected"]
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

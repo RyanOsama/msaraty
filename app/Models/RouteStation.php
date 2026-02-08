@@ -11,6 +11,7 @@ class RouteStation extends Model
     protected $fillable = [
         'route_id',
         'station_id',
+        'order',
     ];
 
     public function route()

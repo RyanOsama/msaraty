@@ -8,8 +8,12 @@ class Route extends Model
 {
     protected $fillable = ['route_name'];
 
+  
     public function stations()
-    {
-        return $this->belongsToMany(Station::class, 'route_station');
-    }
+{
+    return $this->belongsToMany(Station::class, 'route_station')
+                ->withPivot('order')
+                ->orderBy('route_station.order');
+}
+
 }

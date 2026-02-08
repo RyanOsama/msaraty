@@ -8,61 +8,85 @@ use Illuminate\Http\Request;
 
 class RouteStationController extends Controller
 {
-    /**
-     * ربط خط بعدة محطات
-     */
+    // إضافة محطة/محطات (زيادة أو تعديل ترتيب)
     public function store(Request $request)
     {
         $request->validate([
-            'route_id'      => 'required|exists:routes,id',
-            'station_ids'   => 'required|array',
-            'station_ids.*' => 'exists:stations,id',
+            'route_id' => 'required|exists:routes,id',
+            'stations' => 'required|array',
         ]);
 
-        foreach ($request->station_ids as $stationId) {
+        foreach ($request->stations as $station) {
+            if (empty($station['station_id']) || empty($station['order'])) {
+                continue;
+            }
+
             RouteStation::updateOrCreate(
                 [
                     'route_id'   => $request->route_id,
-                    'station_id'=> $stationId,
+                    'station_id'=> $station['station_id'],
+                ],
+                [
+                    'order' => $station['order'],
                 ]
             );
         }
 
-        return back()->with('success', 'تم ربط الخط بالمحطات بنجاح');
+        return back()->with('success', 'تمت العملية بنجاح');
     }
 
-    /**
-     * حذف ربط (خط ↔ محطة)
-     */
-   public function destroy(Request $request)
+    // تعديل ترتيب محطة
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'route_id'   => 'required|exists:routes,id',
+            'station_id'=> 'required|exists:stations,id',
+            'order'     => 'required|integer|min:1',
+        ]);
+
+        RouteStation::where('route_id', $request->route_id)
+            ->where('station_id', $request->station_id)
+            ->update([
+                'order' => $request->order
+            ]);
+
+        return back()->with('success', 'تم تعديل الترتيب');
+    }
+
+    // حذف محطة من خط
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'route_id'   => 'required|exists:routes,id',
+            'station_id'=> 'required|exists:stations,id',
+        ]);
+
+        RouteStation::where('route_id', $request->route_id)
+            ->where('station_id', $request->station_id)
+            ->delete();
+
+        return back()->with('success', 'تم حذف المحطة');
+    }
+    public function bulkUpdateOrder(Request $request)
 {
     $request->validate([
-        'route_id'   => 'required|exists:routes,id',
-        'station_id'=> 'required|exists:stations,id',
+        'route_id' => 'required|exists:routes,id',
+        'orders'   => 'required|array',
     ]);
 
-    RouteStation::where('route_id', $request->route_id)
-        ->where('station_id', $request->station_id)
-        ->delete();
+    foreach ($request->orders as $stationId => $order) {
+        if (!$order) {
+            continue;
+        }
 
-    return back()->with('success', 'تم حذف المحطة من الخط');
-}
+        RouteStation::where('route_id', $request->route_id)
+            ->where('station_id', $stationId)
+            ->update([
+                'order' => $order
+            ]);
+    }
 
-
-    public function update(Request $request)
-{
-    $request->validate([
-        'route_id'     => 'required|exists:routes,id',
-        'station_ids'  => 'required|array',
-        'station_ids.*'=> 'exists:stations,id',
-    ]);
-
-    $route = \App\Models\Route::findOrFail($request->route_id);
-
-    // حذف كل الربط القديم
-    $route->stations()->sync($request->station_ids);
-
-    return back()->with('success', 'تم تحديث محطات الخط بنجاح');
+    return back()->with('success', 'تم حفظ ترتيب المحطات بالكامل');
 }
 
 }

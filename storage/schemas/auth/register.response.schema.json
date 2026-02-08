@@ -19,8 +19,8 @@
     },
     "status": {
       "type": "string",
-      "description": "User account status",
-      "enum": ["pending", "approved", "rejected"]
+      "enum": ["pending", "approved", "rejected"],
+      "description": "User account status"
     }
   },
   "additionalProperties": false

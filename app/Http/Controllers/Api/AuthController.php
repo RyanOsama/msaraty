@@ -51,7 +51,7 @@ class AuthController extends Controller
 }
   
 //login user
-public function login(LoginRequest $request)
+public function login(loginRequest $request)
 {
     
 
@@ -64,10 +64,11 @@ public function login(LoginRequest $request)
     $user = Auth::user();
      //ينفع عند صابر
         return response()->json([
+            'status' => $user->status,
             'user'   => [
-                'username' => $user->username,
-                'role_id'  => $user->role_id,
-                 'status' => $user->status,
+            'username' => $user->username,
+            'role_id'  => $user->role_id,
+                 
             ],
         ], 200);
         

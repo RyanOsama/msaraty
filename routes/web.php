@@ -106,15 +106,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 )->name('admin.route-stations.destroy');
 
 
-    //     Route::put('/route-stations/{id}', [RouteStationController::class, 'update'])
-    // ->name('admin.route-stations.update');
-
-
-});
+Route::put('/admin/route-stations/order', 
+    [RouteStationController::class, 'updateOrder']
+)->name('admin.route-stations.order');
 Route::put(
-    'admin/route-stations',
-    [RouteStationController::class, 'update']
-)->name('admin.route-stations.update');
+    '/admin/route-stations/bulk-order',
+    [\App\Http\Controllers\Admin\RouteStationController::class, 'bulkUpdateOrder']
+)->name('admin.route-stations.bulk-order');
+
+
+
+  
+});
 
 
 
