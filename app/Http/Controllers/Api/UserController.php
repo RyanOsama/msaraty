@@ -74,19 +74,23 @@ public function store(Request $request)
         }
 
         $request->validate([
-
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'role_id'  => 'required|exists:roles,id',
             'status'   => 'required|in:pending,approved,rejected',
         ]);
 
         $user->update([
-            
+            'username' => $request->username,
+            'role_id'  => $request->role_id,
             'status'   => $request->status,
         ]);
 
         return response()->json([
             'message' => 'تم تعديل المستخدم بنجاح',
             'user' => [
-           
+                'id'       => $user->id,
+                'username' => $user->username,
+                'role_id'  => $user->role_id,
                 'status'   => $user->status,
             ],
         ], 200);
