@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Level;
 use App\Models\Department;
 use Illuminate\Http\Request;
+ use Illuminate\Database\QueryException;
+
 class LevelController extends Controller
 {
     public function index()
@@ -48,11 +50,17 @@ class LevelController extends Controller
         return back()->with('success', 'تم تحديث المستوى');
     }
 
-    public function destroy(Level $level)
-    {
+
+public function destroy(Level $level)
+{
+    try {
         $level->delete();
-        return back()->with('success', 'تم حذف المستوى');
+        return back()->with('success', 'تم حذف المستوى بنجاح');
+    } catch (QueryException $e) {
+        return back()->with('error', 'لا يمكن حذف المستوى لأنه مرتبط بطلاب');
     }
+}
+
 public function levelsByDepartment($id)
 {
     $department = \App\Models\Department::find($id);

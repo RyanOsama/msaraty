@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\College;
+  use Illuminate\Database\QueryException;
+
 use Illuminate\Http\Request;
 
 class CollegeController extends Controller
@@ -88,22 +90,25 @@ class CollegeController extends Controller
     }
 
     // حذف كلية
-    public function destroy($id)
-    {
-        $college = College::find($id);
 
-        if (!$college) {
-            return response()->json([
-                'status' => false,
-                'message' => 'College not found'
-            ], 404);
-        }
-
+public function destroy($id)
+{
+    try {
+        $college = College::findOrFail($id);
         $college->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'College deleted successfully'
+            'message' => 'تم حذف الكلية بنجاح'
         ], 200);
+
+    } catch (QueryException $e) {
+
+        return response()->json([
+            'status' => false,
+            'message' => 'لا يمكن حذف الكلية لأنها مرتبطة بطلاب'
+        ], 409);
     }
+}
+
 }

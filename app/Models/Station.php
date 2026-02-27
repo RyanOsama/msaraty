@@ -13,5 +13,13 @@ class Station extends Model
     return $this->belongsToMany(Route::class, 'route_station')
                 ->withPivot('order');
 }
+public function students()
+{
+    return $this->belongsToMany(Student::class)
+                ->withPivot('type')
+                ->withTimestamps();
+}
+
+
 
 }

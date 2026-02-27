@@ -49,5 +49,13 @@ class Student extends Model
 {
     return $this->belongsToMany(Day::class);
 }
+public function stations()
+{
+    return $this->belongsToMany(Station::class)
+                ->withPivot('type')
+                ->withTimestamps();
+}
+
+
 
 }

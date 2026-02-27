@@ -13,9 +13,12 @@ class RouteController extends Controller
     {
         $routes = Route::all();
 
-        return response()->json([
-            'routes' => $routes
-        ]);
+        // return response()->json([
+        //     'routes' => $routes
+        // ]);
+        return response()->json(
+        $routes
+        , 200);
     }
 
     // إضافة خط

@@ -24,9 +24,8 @@ class StationController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        return response()->json([
-            'stations' => $stations
-        ], 200);
+        return response()->json($stations
+        , 200);
     }
 
     /**

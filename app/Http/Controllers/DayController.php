@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class DayController extends Controller
 {
-    // عرض جميع الأيام
+ 
     public function index()
     {
         $days = Day::all();
@@ -49,4 +49,9 @@ class DayController extends Controller
 
         return back()->with('success', 'تم حذف اليوم');
     }
+
+
+
+
+
 }

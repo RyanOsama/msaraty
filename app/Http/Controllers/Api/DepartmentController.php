@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use Illuminate\Http\Request;
+   use Illuminate\Database\QueryException;
+
 
 class DepartmentController extends Controller
 {
@@ -88,22 +90,25 @@ class DepartmentController extends Controller
     }
 
     // حذف قسم
-    public function destroy($id)
-    {
-        $department = Department::find($id);
 
-        if (!$department) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Department not found'
-            ], 404);
-        }
-
+public function destroy($id)
+{
+    try {
+        $department = Department::findOrFail($id);
         $department->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Department deleted successfully'
+            'message' => 'تم حذف القسم بنجاح'
         ], 200);
+
+    } catch (QueryException $e) {
+
+        return response()->json([
+            'status' => false,
+            'message' => 'لا يمكن حذف القسم لأنه مرتبط بطلاب'
+        ], 409);
     }
+}
+
 }

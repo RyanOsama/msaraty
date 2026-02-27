@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\College;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+
 
 class DepartmentController extends Controller
 {
@@ -44,9 +46,15 @@ class DepartmentController extends Controller
         return back()->with('success', 'تم تحديث القسم');
     }
 
-    public function destroy(Department $department)
-    {
+
+public function destroy(Department $department)
+{
+    try {
         $department->delete();
-        return back()->with('success', 'تم حذف القسم');
+        return back()->with('success', 'تم حذف القسم بنجاح');
+    } catch (QueryException $e) {
+        return back()->with('error', 'لا يمكن حذف القسم لأنه مرتبط بطلاب');
     }
+}
+
 }

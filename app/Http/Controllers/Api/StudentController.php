@@ -16,7 +16,8 @@ class StudentController extends Controller
             'college',
             'department',
             'level',
-            'days'
+            'days',
+             'stations'
         ])->get();
 
         return response()->json([

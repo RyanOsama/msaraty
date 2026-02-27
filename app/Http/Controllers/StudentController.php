@@ -59,6 +59,8 @@ class StudentController extends Controller
         'college_id' => 'required',
         'department_id' => 'required',
         'level_id' => 'required',
+           'pickup_station_id' => 'required|different:dropoff_station_id',
+        'dropoff_station_id' => 'required',
     ]);
 
 
@@ -78,7 +80,10 @@ class StudentController extends Controller
 
     $student->days()->sync($request->days ?? []);
 
-
+$student->stations()->attach([
+        $request->pickup_station_id => ['type' => 'pickup'],
+        $request->dropoff_station_id => ['type' => 'dropoff'],
+    ]);
     return redirect()->back()
                      ->with('success', 'Student created successfully');
 }
@@ -130,6 +135,29 @@ class StudentController extends Controller
         'department_id' => $request->department_id,
         'level_id' => $request->level_id,
     ]);
+// محطة الصعود
+if ($request->pickup_station_id) {
+    $student->stations()
+        ->wherePivot('type', 'pickup')
+        ->detach();
+
+    $student->stations()->attach(
+        $request->pickup_station_id,
+        ['type' => 'pickup']
+    );
+}
+
+// محطة النزول
+if ($request->dropoff_station_id) {
+    $student->stations()
+        ->wherePivot('type', 'dropoff')
+        ->detach();
+
+    $student->stations()->attach(
+        $request->dropoff_station_id,
+        ['type' => 'dropoff']
+    );
+}
 
     $student->days()->sync($request->days ?? []);
 
@@ -139,11 +167,19 @@ class StudentController extends Controller
 
 
     // حذف الطالب
-    public function destroy(Student $student)
-    {
-        $student->delete();
+   public function destroy(Student $student)
+{
+    // فك علاقة المحطات
+    $student->stations()->detach();
 
-        return redirect()->back()
-                         ->with('success', 'Student deleted successfully');
-    }
+    // فك علاقة الأيام
+    $student->days()->detach();
+
+    // الآن نحذف الطالب
+    $student->delete();
+
+    return redirect()->back()
+        ->with('success', 'تم حذف الطالب بنجاح');
+}
+
 }

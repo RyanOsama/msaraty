@@ -260,3 +260,48 @@ Route::post('/days', [DayController::class, 'store'])->name('days.store');
 Route::put('/days/{day}', [DayController::class, 'update'])->name('days.update');
 
 Route::delete('/days/{day}', [DayController::class, 'destroy'])->name('days.destroy');
+
+Route::get('/days/{day}/students', [DayController::class, 'students'])
+    ->name('days.students');
+
+
+
+
+
+use App\Http\Controllers\DriverController;
+
+// عرض السائقين
+Route::get('/drivers', [DriverController::class, 'index'])
+    ->name('drivers.index');
+
+// إضافة سائق
+Route::post('/drivers', [DriverController::class, 'store'])
+    ->name('drivers.store');
+
+// تعديل سائق
+Route::put('/drivers/{driver}', [DriverController::class, 'update'])
+    ->name('drivers.update');
+
+// حذف سائق
+Route::delete('/drivers/{driver}', [DriverController::class, 'destroy'])
+    ->name('drivers.destroy');
+
+
+
+    use App\Http\Controllers\BusController;
+
+// عرض الباصات
+Route::get('/buses', [BusController::class, 'index'])
+    ->name('buses.index');
+
+// إضافة باص
+Route::post('/buses', [BusController::class, 'store'])
+    ->name('buses.store');
+
+// تعديل باص
+Route::put('/buses/{bus}', [BusController::class, 'update'])
+    ->name('buses.update');
+
+// حذف باص
+Route::delete('/buses/{bus}', [BusController::class, 'destroy'])
+    ->name('buses.destroy');

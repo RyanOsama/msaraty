@@ -18,42 +18,71 @@ public function index()
         $q->orderBy('route_station.order');
     }])->get();
 
+    // return response()->json([
+    //     'status' => true,
+    //     'data'   => $routes
+    // ]);
     return response()->json([
-        'status' => true,
-        'data'   => $routes
+        'assign'   => $routes
     ]);
 }
 
 
     // إضافة محطة / محطات
-    public function store(Request $request)
-    {
-        $request->validate([
-            'route_id' => 'required|exists:routes,id',
-            'stations' => 'required|array',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'route_id' => 'required|exists:routes,id',
+    //         'stations' => 'required|array',
+    //     ]);
 
-        foreach ($request->stations as $station) {
-            if (empty($station['station_id']) || empty($station['order'])) {
-                continue;
-            }
+    //     foreach ($request->stations as $station) {
+    //         if (empty($station['station_id']) ) {
+    //             continue;
+    //         }
 
-            RouteStation::updateOrCreate(
-                [
-                    'route_id'    => $request->route_id,
-                    'station_id' => $station['station_id'],
-                ],
-                [
-                    'order' => $station['order'],
-                ]
-            );
-        }
+    //         RouteStation::updateOrCreate(
+    //             [
+    //                 'route_id'    => $request->route_id,
+    //                 'station_id' => $station['station_id'],
+    //             ],
+    //             [
+    //                 'order' => $station['order'],
+    //             ]
+    //         );
+    //     }
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'تمت إضافة / تحديث المحطات بنجاح',
-        ], 200);
+    //     return response()->json([
+    //         'status'  => true,
+    //         'message' => 'تمت إضافة / تحديث المحطات بنجاح',
+    //     ], 200);
+    // }
+  public function store(Request $request)
+{
+    $request->validate([
+        'route_id' => 'required|exists:routes,id',
+        'stations' => 'required|array',
+        'stations.*' => 'required|exists:stations,id',
+    ]);
+
+    foreach ($request->stations as $index => $stationId) {
+
+        RouteStation::updateOrCreate(
+            [
+                'route_id'   => $request->route_id,
+                'station_id' => $stationId,
+            ],
+            [
+                'order' => $index + 1,
+            ]
+        );
     }
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'تمت إضافة / تحديث المحطات بنجاح',
+    ], 200);
+}
 
     // تعديل ترتيب محطة واحدة
     public function updateOrder(Request $request)
@@ -94,29 +123,29 @@ public function index()
         ]);
     }
 
-    // حفظ الترتيب كامل دفعة واحدة
-    public function bulkUpdateOrder(Request $request)
-    {
-        $request->validate([
-            'route_id' => 'required|exists:routes,id',
-            'orders'   => 'required|array',
-        ]);
+    // // حفظ الترتيب كامل دفعة واحدة
+    // public function bulkUpdateOrder(Request $request)
+    // {
+    //     $request->validate([
+    //         'route_id' => 'required|exists:routes,id',
+    //         'orders'   => 'required|array',
+    //     ]);
 
-        foreach ($request->orders as $stationId => $order) {
-            if (!$order) {
-                continue;
-            }
+    //     foreach ($request->orders as $stationId => $order) {
+    //         if (!$order) {
+    //             continue;
+    //         }
 
-            RouteStation::where('route_id', $request->route_id)
-                ->where('station_id', $stationId)
-                ->update([
-                    'order' => $order
-                ]);
-        }
+    //         RouteStation::where('route_id', $request->route_id)
+    //             ->where('station_id', $stationId)
+    //             ->update([
+    //                 'order' => $order
+    //             ]);
+    //     }
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'تم حفظ ترتيب المحطات بالكامل',
-        ]);
-    }
+    //     return response()->json([
+    //         'status'  => true,
+    //         'message' => 'تم حفظ ترتيب المحطات بالكامل',
+    //     ]);
+    // }
 }

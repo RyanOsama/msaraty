@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\University;
 use Illuminate\Http\Request;
+ use Illuminate\Database\QueryException;
 
 class UniversityController extends Controller
 {
@@ -43,10 +44,21 @@ class UniversityController extends Controller
     }
 
     // حذف جامعة
-    public function destroy(University $university)
-    {
+
+public function destroy(University $university)
+{
+    try {
         $university->delete();
 
-        return back()->with('success', 'تم حذف الجامعة');
+        return back()->with('success', 'تم حذف الجامعة بنجاح');
+
+    } catch (QueryException $e) {
+
+        return back()->with(
+            'error',
+            'لا يمكن حذف الجامعة لأنها مرتبطة بطلاب'
+        );
     }
+}
+
 }

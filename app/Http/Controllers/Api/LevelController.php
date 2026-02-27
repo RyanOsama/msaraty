@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Level;
 use App\Models\Department;
 use Illuminate\Http\Request;
+   use Illuminate\Database\QueryException;
+
 
 class LevelController extends Controller
 {
@@ -94,24 +96,27 @@ class LevelController extends Controller
     }
 
     // حذف مستوى
-    public function destroy($id)
-    {
-        $level = Level::find($id);
 
-        if (!$level) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Level not found'
-            ], 404);
-        }
-
+public function destroy($id)
+{
+    try {
+        $level = Level::findOrFail($id);
         $level->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Level deleted successfully'
+            'message' => 'تم حذف المستوى بنجاح'
         ], 200);
+
+    } catch (QueryException $e) {
+
+        return response()->json([
+            'status' => false,
+            'message' => 'لا يمكن حذف المستوى لأنه مرتبط بطلاب'
+        ], 409);
     }
+}
+
 
     // عرض المستويات حسب القسم
     public function levelsByDepartment($id)

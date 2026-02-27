@@ -496,7 +496,7 @@
     <h4 class="mb-4 fw-bold text-center">🎓 إدارة الطلاب</h4>
 
     {{-- عرض الطلاب --}}
-    @foreach(\App\Models\Student::with(['days'])->get() as $student)
+    @foreach(\App\Models\Student::with(['days','stations'])->get() as $student)
 
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light fw-bold">
@@ -603,6 +603,40 @@
                             @endforeach
                         </select>
                     </div>
+                  <div class="col-md-3">
+    <label class="form-label small fw-bold">محطة الصعود</label>
+    <select name="pickup_station_id" class="form-select form-select-sm">
+        <option value="">اختر محطة الصعود</option>
+        @foreach(\App\Models\Station::all() as $station)
+            <option value="{{ $station->id }}"
+                @selected(
+                    optional($student->stations->firstWhere('pivot.type','pickup'))->id
+                    == $station->id
+                )>
+                {{ $station->station_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="col-md-3">
+    <label class="form-label small fw-bold">محطة النزول</label>
+    <select name="dropoff_station_id" class="form-select form-select-sm">
+        <option value="">اختر محطة النزول</option>
+        @foreach(\App\Models\Station::all() as $station)
+            <option value="{{ $station->id }}"
+                @selected(
+                    optional($student->stations->firstWhere('pivot.type','dropoff'))->id
+                    == $station->id
+                )>
+                {{ $station->station_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
+
 
                     <div class="col-md-3">
                         <label class="form-label small">الأيام</label>
@@ -726,6 +760,29 @@
                 <select name="level_id" id="level_id" class="form-select form-select-sm">
  <option value="" selected disabled>اختر المستوى</option>                </select>
             </div>
+{{-- محطة الصعود --}}
+<div class="col-md-2">
+    <select name="pickup_station_id" class="form-select form-select-sm" required>
+        <option value="" selected disabled>اختر محطة الصعود</option>
+        @foreach(\App\Models\Station::all() as $station)
+            <option value="{{ $station->id }}">
+                {{ $station->station_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+{{-- محطة النزول --}}
+<div class="col-md-2">
+    <select name="dropoff_station_id" class="form-select form-select-sm" required>
+        <option value="" selected disabled>اختر محطة النزول</option>
+        @foreach(\App\Models\Station::all() as $station)
+            <option value="{{ $station->id }}">
+                {{ $station->station_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
             {{-- الأيام --}}
             <div class="col-md-3">
@@ -1338,6 +1395,301 @@ document.getElementById('department_id').addEventListener('change', function () 
         </form>
 
     </div>
+</div>
+<hr>
+<div class="row g-3">
+
+@foreach(\App\Models\Day::with('students.department')->get() as $day)
+
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+
+            {{-- Header --}}
+            <div class="card-header d-flex justify-content-between align-items-center bg-info text-white">
+                <span class="fw-bold">
+                    📅 {{ $day->day_name }}
+                </span>
+
+                <div class="d-flex gap-1">
+                    <form method="POST" action="{{ route('days.update', $day->id) }}" class="d-inline">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="day_name" value="{{ $day->day_name }}">
+                        <button class="btn btn-warning btn-sm">✏</button>
+                    </form>
+
+                    <form method="POST" action="{{ route('days.destroy', $day->id) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger btn-sm"
+                                onclick="return confirm('متأكد من الحذف؟')">🗑</button>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Body --}}
+            <div class="card-body">
+
+                <h6 class="fw-bold mb-2">👨‍🎓 الطلاب الدوامهم اليوم</h6>
+
+                @if($day->students->count())
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($day->students as $student)
+                            <span class="badge bg-primary p-2">
+                                {{ $student->name }}
+                                <small class="opacity-75">
+                                    ({{ $student->department->department_name ?? '-' }})
+                                </small>
+                            </span>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="alert alert-secondary py-2 mb-0">
+                        لا يوجد طلاب مسجلين في هذا اليوم
+                    </div>
+                @endif
+
+            </div>
+        </div>
+    </div>
+
+@endforeach
+
+</div>
+
+
+<!-- ================= DRIVERS ================= -->
+<div class="container my-5">
+
+    <h4 class="mb-4 fw-bold text-center">🚍 إدارة السائقين</h4>
+
+    {{-- عرض السائقين --}}
+    @foreach(\App\Models\Driver::with('bus')->get() as $driver)
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+
+                <form class="row g-3 align-items-end"
+                      method="POST"
+                      action="{{ route('drivers.update', $driver->id) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="col-md-3">
+                        <label class="form-label small">اسم السائق</label>
+                        <input class="form-control form-control-sm"
+                               name="name_driver"
+                               value="{{ $driver->name_driver }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small">رقم الجوال</label>
+                        <input class="form-control form-control-sm"
+                               name="phone"
+                               value="{{ $driver->phone }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small">الحالة</label>
+                        <select class="form-select form-select-sm" name="state">
+                            <option value="Active" @selected($driver->state=='Active')>نشط</option>
+                            <option value="Inactive" @selected($driver->state=='Inactive')>غير نشط</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small">الباص</label>
+                        <div class="form-control form-control-sm bg-light">
+                            {{ $driver->bus->id ?? 'غير مرتبط' }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-1">
+                        <button class="btn btn-warning btn-sm w-100">
+                            تعديل
+                        </button>
+                    </div>
+                </form>
+
+                {{-- حذف --}}
+                <form method="POST"
+                      action="{{ route('drivers.destroy', $driver->id) }}"
+                      class="mt-2 text-end">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-sm"
+                            onclick="return confirm('متأكد من حذف السائق؟')">
+                        حذف
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    @endforeach
+
+    <hr class="my-4">
+
+    {{-- إضافة سائق --}}
+    <div class="card shadow">
+        <div class="card-header bg-success text-white fw-bold">
+            ➕ إضافة سائق جديد
+        </div>
+
+        <div class="card-body">
+            <form class="row g-3" method="POST" action="{{ route('drivers.store') }}">
+                @csrf
+
+                <div class="col-md-4">
+                    <label class="form-label small">اسم السائق</label>
+                    <input class="form-control form-control-sm"
+                           name="name_driver"
+                           placeholder="اسم السائق"
+                           required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small">رقم الجوال</label>
+                    <input class="form-control form-control-sm"
+                           name="phone"
+                           placeholder="رقم الجوال">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small">الحالة</label>
+                    <select class="form-select form-select-sm" name="state">
+                        <option value="Active">نشط</option>
+                        <option value="Inactive">غير نشط</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-success w-100">
+                        إضافة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<hr>
+<!-- ================= BUSES ================= -->
+<div class="container my-5">
+
+    <h4 class="mb-4 fw-bold text-center">🚌 إدارة الباصات</h4>
+
+    {{-- عرض الباصات --}}
+    @foreach(\App\Models\Bus::with('driver')->get() as $bus)
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+
+                <form class="row g-3 align-items-end"
+                      method="POST"
+                      action="{{ route('buses.update', $bus->id) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="col-md-3">
+                        <label class="form-label small">عدد الركاب</label>
+                        <input class="form-control form-control-sm"
+                               name="number_passengers"
+                               value="{{ $bus->number_passengers }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small">نوع الوقود</label>
+                        <input class="form-control form-control-sm"
+                               name="type_fuel"
+                               value="{{ $bus->type_fuel }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small">السائق</label>
+                        <select class="form-select form-select-sm" name="driver_id">
+                            @foreach(\App\Models\Driver::all() as $driver)
+                                <option value="{{ $driver->id }}"
+                                    @selected($bus->driver_id == $driver->id)>
+                                    {{ $driver->name_driver }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-1">
+                        <button class="btn btn-warning btn-sm w-100">
+                            تعديل
+                        </button>
+                    </div>
+                </form>
+
+                {{-- حذف --}}
+                <form method="POST"
+                      action="{{ route('buses.destroy', $bus->id) }}"
+                      class="mt-2 text-end">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-sm"
+                            onclick="return confirm('متأكد من حذف الباص؟')">
+                        حذف
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    @endforeach
+
+    <hr class="my-4">
+
+    {{-- إضافة باص --}}
+    <div class="card shadow">
+        <div class="card-header bg-success text-white fw-bold">
+            ➕ إضافة باص جديد
+        </div>
+
+        <div class="card-body">
+            <form class="row g-3" method="POST" action="{{ route('buses.store') }}">
+                @csrf
+
+                <div class="col-md-4">
+                    <label class="form-label small">عدد الركاب</label>
+                    <input class="form-control form-control-sm"
+                           name="number_passengers"
+                           required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small">نوع الوقود</label>
+                    <input class="form-control form-control-sm"
+                           name="type_fuel"
+                           placeholder="ديزل / بنزين / كهرباء">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small">السائق</label>
+                    <select class="form-select form-select-sm" name="driver_id" required>
+                        <option value="">اختر السائق</option>
+                        @foreach(\App\Models\Driver::doesntHave('bus')->get() as $driver)
+                            <option value="{{ $driver->id }}">
+                                {{ $driver->name_driver }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-success w-100">
+                        إضافة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
 

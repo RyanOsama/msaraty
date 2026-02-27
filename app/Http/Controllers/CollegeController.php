@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\College;
 use App\Models\University;
 use Illuminate\Http\Request;
+   use Illuminate\Database\QueryException;
+
 
 class CollegeController extends Controller
 {
@@ -47,10 +49,15 @@ class CollegeController extends Controller
         return back()->with('success', 'تم تحديث الكلية');
     }
 
-    // حذف
-    public function destroy(College $college)
-    {
+
+public function destroy(College $college)
+{
+    try {
         $college->delete();
-        return back()->with('success', 'تم حذف الكلية');
+        return back()->with('success', 'تم حذف الكلية بنجاح');
+    } catch (QueryException $e) {
+        return back()->with('error', 'لا يمكن حذف الكلية لأنها مرتبطة بطلاب');
     }
+}
+
 }

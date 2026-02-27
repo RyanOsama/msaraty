@@ -11,33 +11,33 @@ class UserController extends Controller
 {
     /**
      * عرض جميع المستخدمين
-     */
-    // public function index()
-    // {
-    //     $users = User::select(
-    //             'id',
-    //             'username',
-    //             'role_id',
-    //             'status',
-    //             'created_at'
-    //         )
-    //         ->orderBy('id', 'desc')
-    //         ->get();
-
-    //     return response()->json([
-    //         'users' => $users
-    //     ], 200);
-    // }
+     *///شغال عند صابر 
     public function index()
-{
-    return User::select(
-        'id',
-        'username',
-        'role_id',
-        'status',
-        'created_at'
-    )->orderBy('id', 'desc')->get();
-}
+    {
+        $users = User::select(
+                'id',
+                'username',
+                'role_id',
+                'status',
+                'created_at'
+            )
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'users' => $users
+        ], 200);
+    }
+//     public function index()
+// {
+//     return User::select(
+//         'id',
+//         'username',
+//         'role_id',
+//         'status',
+//         'created_at'
+//     )->orderBy('id', 'desc')->get();
+// }
 
 public function store(Request $request)
 {
