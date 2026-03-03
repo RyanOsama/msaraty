@@ -7,16 +7,11 @@ RUN npm run build
 
 FROM php:8.2-apache
 
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
+# ✅ استخدام أداة تثبيت الإضافات السريعة
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN apt-get update && apt-get install -y zip unzip git curl \
+    && install-php-extensions pdo_mysql mbstring zip exif pcntl bcmath gd
 
 RUN a2enmod rewrite
 
@@ -36,7 +31,8 @@ ENV APACHE_DOCUMENT_ROOT /var/www/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN sed -i 's/Listen 80/Listen 9876/' /etc/apache2/ports.conf
+RUN sed -i 's/:80/:9876/g' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 9876
 
