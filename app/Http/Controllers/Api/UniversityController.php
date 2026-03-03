@@ -9,18 +9,24 @@ use Illuminate\Http\Request;
 
 
 class UniversityController extends Controller
-{
-    // عرض جميع الجامعات
-    public function index()
-    {
-        $universities = University::all();
+ {
+//     // عرض جميع الجامعات
+//     public function index()
+//     {
+//         $universities = University::all();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Universities retrieved successfully',
-            'data' => $universities
-        ], 200);
-    }
+//         return response()->json([
+//             'status' => true,
+//             'message' => 'Universities retrieved successfully',
+//             'data' => $universities
+//         ], 200);
+//     }
+    public function index()
+{
+    $universities = University::all();
+
+    return response()->json($universities, 200);
+}
 
     // عرض جامعة واحدة
     public function show($id)

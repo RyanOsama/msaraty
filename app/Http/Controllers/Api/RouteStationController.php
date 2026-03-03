@@ -12,20 +12,56 @@ class RouteStationController extends Controller
 {
 
 
+// public function index()
+// {
+//     $routes = Route::with(['stations' => function ($q) {
+//         $q->orderBy('route_station.order');
+//     }])->get();
+
+   
+//    return response()->json($routes, 200);
+// }
 public function index()
 {
     $routes = Route::with(['stations' => function ($q) {
         $q->orderBy('route_station.order');
     }])->get();
 
-    // return response()->json([
-    //     'status' => true,
-    //     'data'   => $routes
-    // ]);
-    return response()->json([
-        'assign'   => $routes
-    ]);
+    $result = $routes->map(function ($route) {
+        return [
+            'id' => $route->id,          // assign id
+            'route_id' => $route->id,    // الفرونت يعتمد عليها
+            'stations' => $route->stations
+                ->sortBy('pivot.order')
+                ->pluck('id')            // نحولها IDs فقط
+                ->values()
+                ->toArray(),
+        ];
+    });
+
+    return response()->json($result, 200);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // إضافة محطة / محطات

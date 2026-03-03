@@ -15,11 +15,8 @@ class CollegeController extends Controller
     {
         $colleges = College::with('university')->get();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Colleges retrieved successfully',
-            'data' => $colleges
-        ], 200);
+        return response()->json($colleges
+        , 200);
     }
 
    

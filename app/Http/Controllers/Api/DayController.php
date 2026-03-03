@@ -13,11 +13,8 @@ class DayController extends Controller
     {
         $days = Day::all();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Days retrieved successfully',
-            'data' => $days
-        ], 200);
+        return response()->json( $days
+        , 200);
     }
 
     // عرض يوم واحد

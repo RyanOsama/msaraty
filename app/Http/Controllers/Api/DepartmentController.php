@@ -15,11 +15,8 @@ class DepartmentController extends Controller
     {
         $departments = Department::with('college')->get();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Departments retrieved successfully',
-            'data' => $departments
-        ], 200);
+        return response()->json( $departments
+        , 200);
     }
 
     // عرض قسم واحد

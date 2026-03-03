@@ -16,11 +16,8 @@ class LevelController extends Controller
     {
         $levels = Level::with('departments.college.university')->get();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Levels retrieved successfully',
-            'data' => $levels
-        ], 200);
+        return response()->json( $levels
+         ,200);
     }
 
     // عرض مستوى واحد

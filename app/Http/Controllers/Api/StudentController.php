@@ -8,49 +8,100 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    // عرض جميع الطلاب
-    public function index()
-    {
-        $students = Student::with([
-            'university',
-            'college',
-            'department',
-            'level',
-            'days',
-             'stations'
-        ])->get();
+  
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Students retrieved successfully',
-            'data' => $students
-        ], 200);
-    }
+//     public function index()
+// {
+//     $students = Student::with([
+//         'university',
+//         'college',
+//         'department',
+//         'level',
+//         'days',
+//         'stations'
+//     ])->get();
 
-    // عرض طالب واحد
-    public function show($id)
-    {
-        $student = Student::with([
-            'university',
-            'college',
-            'department',
-            'level',
-            'days'
-        ])->find($id);
+//     return response()->json($students, 200);
+// }
 
-        if (!$student) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Student not found'
-            ], 404);
-        }
 
-        return response()->json([
-            'status' => true,
-            'data' => $student
-        ], 200);
-    }
 
+
+
+public function index()
+{
+    $students = Student::with([
+        'university',
+        'college',
+        'department',
+        'level',
+        'stations'
+    ])->get();
+
+    $result = $students->map(function ($student) {
+
+        // محطة الصعود
+        $pickup = $student->stations
+            ->where('pivot.type', 'pickup')
+            ->first();
+
+        // محطة النزول
+        $dropoff = $student->stations
+            ->where('pivot.type', 'dropoff')
+            ->first();
+
+        return [
+            'id' => $student->id,
+            'name' => $student->name,
+            'phone' => $student->phone,
+            'university_number' => $student->university_number,
+            'city' => $student->city,
+
+            // ✅ توحيد الجنس
+            'gender' => in_array($student->gender, ['رجل', 'ذكر']) ? 'ذكر' : 'أنثى',
+
+            // ✅ توحيد الحالة (important)
+            'state' => strtolower($student->state) === 'active' ? 'active' : 'inactive',
+
+            'user_id' => $student->user_id,
+            'university_id' => $student->university_id,
+            'college_id' => $student->college_id,
+            'department_id' => $student->department_id,
+            'level_id' => $student->level_id,
+
+            // ✅ الحقول اللي الفرونت يحتاجها
+            'pickup_station_id' => $pickup?->id,
+            'dropoff_station_id' => $dropoff?->id,
+
+            'created_at' => $student->created_at,
+            'updated_at' => $student->updated_at,
+        ];
+    });
+
+    return response()->json($result, 200);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     // إنشاء طالب
     public function store(Request $request)
     {
