@@ -5,41 +5,32 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\RouteStation;
 use App\Models\Route;
+use App\Models\station;
+
 
 use Illuminate\Http\Request;
-
 class RouteStationController extends Controller
 {
 
-
-// public function index()
-// {
-//     $routes = Route::with(['stations' => function ($q) {
-//         $q->orderBy('route_station.order');
-//     }])->get();
-
-   
-//    return response()->json($routes, 200);
-// }
-public function index()
+    public function index()
 {
     $routes = Route::with(['stations' => function ($q) {
         $q->orderBy('route_station.order');
     }])->get();
 
-    $result = $routes->map(function ($route) {
+    $assign = $routes->map(function ($route) {
         return [
-            'id' => $route->id,          // assign id
-            'route_id' => $route->id,    // الفرونت يعتمد عليها
+            'route_id' => $route->id,
             'stations' => $route->stations
                 ->sortBy('pivot.order')
-                ->pluck('id')            // نحولها IDs فقط
+                ->pluck('id')
                 ->values()
                 ->toArray(),
+            'id' => $route->id
         ];
     });
 
-    return response()->json($result, 200);
+    return response()->json($assign);
 }
 
 
@@ -53,46 +44,7 @@ public function index()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    // إضافة محطة / محطات
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'route_id' => 'required|exists:routes,id',
-    //         'stations' => 'required|array',
-    //     ]);
-
-    //     foreach ($request->stations as $station) {
-    //         if (empty($station['station_id']) ) {
-    //             continue;
-    //         }
-
-    //         RouteStation::updateOrCreate(
-    //             [
-    //                 'route_id'    => $request->route_id,
-    //                 'station_id' => $station['station_id'],
-    //             ],
-    //             [
-    //                 'order' => $station['order'],
-    //             ]
-    //         );
-    //     }
-
-    //     return response()->json([
-    //         'status'  => true,
-    //         'message' => 'تمت إضافة / تحديث المحطات بنجاح',
-    //     ], 200);
-    // }
+   
   public function store(Request $request)
 {
     $request->validate([
@@ -159,29 +111,5 @@ public function index()
         ]);
     }
 
-    // // حفظ الترتيب كامل دفعة واحدة
-    // public function bulkUpdateOrder(Request $request)
-    // {
-    //     $request->validate([
-    //         'route_id' => 'required|exists:routes,id',
-    //         'orders'   => 'required|array',
-    //     ]);
-
-    //     foreach ($request->orders as $stationId => $order) {
-    //         if (!$order) {
-    //             continue;
-    //         }
-
-    //         RouteStation::where('route_id', $request->route_id)
-    //             ->where('station_id', $stationId)
-    //             ->update([
-    //                 'order' => $order
-    //             ]);
-    //     }
-
-    //     return response()->json([
-    //         'status'  => true,
-    //         'message' => 'تم حفظ ترتيب المحطات بالكامل',
-    //     ]);
-    // }
+   
 }

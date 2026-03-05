@@ -19,22 +19,18 @@ class RouteController extends Controller
         , 200);
     }
 
-    // إضافة خط
-    public function store(Request $request)
-    {
-        $request->validate([
-            'route_name' => ['required', 'string', 'max:255'],
-        ]);
+  public function store(Request $request)
+{
+    $request->validate([
+        'route_name' => ['required', 'string', 'max:255'],
+    ]);
 
-        $route = Route::create([
-            'route_name' => $request->route_name,
-        ]);
+    $route = Route::create([
+        'route_name' => $request->route_name,
+    ]);
 
-        return response()->json([
-            'message' => 'تم إضافة الخط بنجاح',
-            'route'   => $route,
-        ], 201);
-    }
+    return response()->json($route, 201);
+}
 
     // تعديل خط
     public function update(Request $request, Route $route)

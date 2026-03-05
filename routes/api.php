@@ -56,7 +56,7 @@ Route::get('/check-status', [AuthController::class, 'checkStatus']);
 use App\Http\Controllers\Api\UserController;
 
 Route::get('/users', [UserController::class, 'index']);
-Route::put('/users/{id}', [UserController::class, 'update']);
+Route::patch('/users/{id}', [UserController::class, 'update']);
 
 Route::delete('/users/{id}', [UserController::class, 'destroy']); 
 Route::post('/users', [UserController::class, 'store']);
@@ -80,12 +80,12 @@ Route::delete('/stations/{id}', [StationController::class, 'destroy']);
 
 use App\Http\Controllers\Api\RouteStationController;
 
-Route::get('/route-stations', [RouteStationController::class, 'index']);
+Route::get('/assign', [RouteStationController::class, 'index']);
 
-Route::post('/route-stations', [RouteStationController::class, 'store']);
-Route::put('/route-stations/order', [RouteStationController::class, 'updateOrder']);
-Route::put('/route-stations/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
-Route::delete('/route-stations', [RouteStationController::class, 'destroy']);
+// Route::post('/route-stations', [RouteStationController::class, 'store']);
+// Route::put('/route-stations/order', [RouteStationController::class, 'updateOrder']);
+// Route::put('/route-stations/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
+// Route::delete('/route-stations', [RouteStationController::class, 'destroy']);
 
 
 
