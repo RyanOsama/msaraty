@@ -117,6 +117,8 @@ public function index()
             'college_id' => 'required|exists:colleges,id',
             'department_id' => 'required|exists:departments,id',
             'level_id' => 'required|exists:levels,id',
+                'station_id' => 'required|exists:stations,id',   // هنا
+
             'days' => 'nullable|array',
             'days.*' => 'exists:days,id'
         ]);
@@ -135,6 +137,13 @@ public function index()
             'user_id' => $request->user_id
 
         ]);
+        DB::table('station_student')->insert([
+    'student_id' => $student->id,
+    'station_id' => $request->station_id,
+    'type' => 'pickup',
+    'created_at' => now(),
+    'updated_at' => now()
+]);
 
         // ربط الأيام
         $student->days()->sync($request->days ?? []);

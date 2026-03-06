@@ -5,10 +5,27 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
+
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+
+//عرض الرولات
+public function getRoles()
+{
+      $role = role::select(
+                'id',
+                'name',
+            )
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json($role
+        ,200);
+}
     /**
      * عرض جميع المستخدمين
      *///شغال عند صابر 
