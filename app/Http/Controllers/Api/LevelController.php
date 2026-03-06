@@ -12,13 +12,19 @@ use Illuminate\Http\Request;
 class LevelController extends Controller
 {
     // عرض جميع المستويات مع الأقسام والكلية والجامعة
-    public function index()
-    {
-        $levels = Level::with('departments.college.university')->get();
+public function index()
+{
+    $levels = Level::with('departments')->get()->map(function ($level) {
 
-        return response()->json( $levels
-         ,200);
-    }
+        return [
+            'id' => $level->id,
+            'level_name' => $level->level_name,
+            'department_id' => $level->departments->first()?->id
+        ];
+    });
+
+    return response()->json($levels);
+}
 
     // عرض مستوى واحد
     public function show($id)
@@ -39,27 +45,26 @@ class LevelController extends Controller
     }
 
     // إنشاء مستوى
-    public function store(Request $request)
-    {
-        $request->validate([
-            'level_name' => 'required',
-            'department_ids' => 'required|array',
-            'department_ids.*' => 'exists:departments,id'
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'level_name' => 'required',
+        'department_id' => 'required|exists:departments,id'
+    ]);
 
-        $level = Level::create([
-            'level_name' => $request->level_name
-        ]);
+    $level = Level::create([
+        'level_name' => $request->level_name
+    ]);
 
-        // ربط الأقسام
-        $level->departments()->sync($request->department_ids);
+    // ربط القسم بالمستوى
+    $level->departments()->attach($request->department_id);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Level created successfully',
-            'data' => $level->load('departments')
-        ], 201);
-    }
+    return response()->json([
+        'status' => true,
+        'message' => 'Level created successfully',
+        'data' => $level
+    ], 201);
+}
 
     // تحديث مستوى
     public function update(Request $request, $id)

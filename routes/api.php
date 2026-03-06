@@ -82,11 +82,10 @@ use App\Http\Controllers\Api\RouteStationController;
 
 Route::get('/assign', [RouteStationController::class, 'index']);
 
-// Route::post('/route-stations', [RouteStationController::class, 'store']);
-// Route::put('/route-stations/order', [RouteStationController::class, 'updateOrder']);
-// Route::put('/route-stations/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
-// Route::delete('/route-stations', [RouteStationController::class, 'destroy']);
-
+Route::post('/assign', [RouteStationController::class, 'store']);
+Route::patch('/assign/{id}', [RouteStationController::class, 'updateOrder']);
+Route::put('/assign/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
+Route::delete('/assign/{id}', [RouteStationController::class, 'destroy']);
 
 
 

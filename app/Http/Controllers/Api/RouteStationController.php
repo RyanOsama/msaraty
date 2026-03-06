@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\RouteStation;
 use App\Models\Route;
 use App\Models\station;
+use App\Models\RouteStationOrder;
+
 
 
 use Illuminate\Http\Request;
@@ -72,44 +74,58 @@ class RouteStationController extends Controller
     ], 200);
 }
 
-    // تعديل ترتيب محطة واحدة
-    public function updateOrder(Request $request)
-    {
-        $request->validate([
-            'route_id'    => 'required|exists:routes,id',
-            'station_id' => 'required|exists:stations,id',
-            'order'      => 'required|integer|min:1',
-        ]);
+public function updateOrder(Request $request, $routeId)
+{
+    $request->validate([
+        'stations' => 'required|array',
+        'stations.*' => 'exists:stations,id'
+    ]);
 
-        RouteStation::where('route_id', $request->route_id)
-            ->where('station_id', $request->station_id)
-            ->update([
-                'order' => $request->order
-            ]);
+    $stations = $request->stations;
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'تم تعديل ترتيب المحطة',
-        ]);
+    // حذف المحطات التي أزيلت
+    RouteStation::where('route_id', $routeId)
+        ->whereNotIn('station_id', $stations)
+        ->delete();
+
+    // تحديث أو إضافة المحطات
+    foreach ($stations as $index => $stationId) {
+
+        RouteStation::updateOrCreate(
+            [
+                'route_id' => $routeId,
+                'station_id' => $stationId
+            ],
+            [
+                'order' => $index + 1
+            ]
+        );
     }
 
-    // حذف محطة من خط
-    public function destroy(Request $request)
-    {
-        $request->validate([
-            'route_id'    => 'required|exists:routes,id',
-            'station_id' => 'required|exists:stations,id',
-        ]);
+    return response()->json([
+        'status' => true,
+        'message' => 'تم تحديث المحطات بنجاح'
+    ]);
+}
+    // 
 
-        RouteStation::where('route_id', $request->route_id)
-            ->where('station_id', $request->station_id)
-            ->delete();
+ public function destroy($id)
+{
+    $routeStation = RouteStation::find($id);
 
+    if (!$routeStation) {
         return response()->json([
-            'status'  => true,
-            'message' => 'تم حذف المحطة من الخط',
-        ]);
+            'status' => false,
+            'message' => 'الربط غير موجود'
+        ], 404);
     }
 
+    $routeStation->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'تم حذف المحطة من المسار'
+    ]);
+}
    
 }
