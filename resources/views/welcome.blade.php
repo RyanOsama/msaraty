@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ar">
 <head>
     
@@ -490,7 +490,7 @@
 
     </div>
 </div>
-
+<!-- 
 <div class="container my-4">
 
     <h4 class="mb-4 fw-bold text-center">🎓 إدارة الطلاب</h4>
@@ -836,7 +836,7 @@ document.getElementById('department_id').addEventListener('change', function () 
         });
 
 });
-</script>
+</script> -->
 
 
 <!-- ================= UNIVERSITIES ================= -->
@@ -1695,4 +1695,4 @@ document.getElementById('department_id').addEventListener('change', function () 
 
 
 </body>
-</html>
+</html> -->
