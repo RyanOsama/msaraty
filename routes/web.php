@@ -37,7 +37,7 @@ require __DIR__.'/auth.php';
 
 // راوت اداره المستخدمين
 use App\Http\Controllers\Admin\UserManagementController;
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+
 
     // صفحة إضافة طالب
     Route::get('/users/create', [UserManagementController::class, 'create'])
@@ -54,7 +54,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // حذف مستخدم
     Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])
         ->name('admin.users.destroy');
-});
 
 
 use App\Http\Controllers\Admin\RouteController;

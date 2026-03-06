@@ -19,6 +19,8 @@ class Student extends Model
         'college_id',
         'level_id',
         'department_id',
+        'pickup_station_id',
+'dropoff_station_id'
     ];
 
     public function user()
@@ -49,11 +51,14 @@ class Student extends Model
 {
     return $this->belongsToMany(Day::class);
 }
-public function stations()
+public function pickupStation()
 {
-    return $this->belongsToMany(Station::class)
-                ->withPivot('type')
-                ->withTimestamps();
+    return $this->belongsTo(Station::class, 'pickup_station_id');
+}
+
+public function dropoffStation()
+{
+    return $this->belongsTo(Station::class, 'dropoff_station_id');
 }
 
 

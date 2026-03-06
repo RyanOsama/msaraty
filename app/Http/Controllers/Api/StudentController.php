@@ -28,6 +28,60 @@ class StudentController extends Controller
 
 
 
+// public function index()
+// {
+//     $students = Student::with([
+//         'university',
+//         'college',
+//         'department',
+//         'level',
+//         'pickupStation',
+// 'dropoffStation'
+//     ])->get();
+
+//     $result = $students->map(function ($student) {
+
+//         // محطة الصعود
+//         $pickup = $student->stations
+//             ->where('pivot.type', 'pickup')
+//             ->first();
+
+//         // محطة النزول
+//         $dropoff = $student->stations
+//             ->where('pivot.type', 'dropoff')
+//             ->first();
+
+//         return [
+//             'id' => $student->id,
+//             'name' => $student->name,
+//             'phone' => $student->phone,
+//             'university_number' => $student->university_number,
+//             'city' => $student->city,
+
+//             // ✅ توحيد الجنس
+//             'gender' => in_array($student->gender, ['رجل', 'ذكر']) ? 'ذكر' : 'أنثى',
+
+//             // ✅ توحيد الحالة (important)
+//             'state' => strtolower($student->state) === 'active' ? 'active' : 'inactive',
+
+//             'user_id' => $student->user_id,
+//             'university_id' => $student->university_id,
+//             'college_id' => $student->college_id,
+//             'department_id' => $student->department_id,
+//             'level_id' => $student->level_id,
+
+//             // ✅ الحقول اللي الفرونت يحتاجها
+//             'pickup_station_id' => $pickup?->id,
+//             'dropoff_station_id' => $dropoff?->id,
+
+//             'created_at' => $student->created_at,
+//             'updated_at' => $student->updated_at,
+//         ];
+//     });
+
+//     return response()->json($result, 200);
+// }
+
 public function index()
 {
     $students = Student::with([
@@ -35,20 +89,11 @@ public function index()
         'college',
         'department',
         'level',
-        'stations'
+        'pickupStation',
+        'dropoffStation'
     ])->get();
 
     $result = $students->map(function ($student) {
-
-        // محطة الصعود
-        $pickup = $student->stations
-            ->where('pivot.type', 'pickup')
-            ->first();
-
-        // محطة النزول
-        $dropoff = $student->stations
-            ->where('pivot.type', 'dropoff')
-            ->first();
 
         return [
             'id' => $student->id,
@@ -57,10 +102,8 @@ public function index()
             'university_number' => $student->university_number,
             'city' => $student->city,
 
-            // ✅ توحيد الجنس
             'gender' => in_array($student->gender, ['رجل', 'ذكر']) ? 'ذكر' : 'أنثى',
 
-            // ✅ توحيد الحالة (important)
             'state' => strtolower($student->state) === 'active' ? 'active' : 'inactive',
 
             'user_id' => $student->user_id,
@@ -69,9 +112,8 @@ public function index()
             'department_id' => $student->department_id,
             'level_id' => $student->level_id,
 
-            // ✅ الحقول اللي الفرونت يحتاجها
-            'pickup_station_id' => $pickup?->id,
-            'dropoff_station_id' => $dropoff?->id,
+            'pickup_station_id' => $student->pickup_station_id,
+            'dropoff_station_id' => $student->dropoff_station_id,
 
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,
@@ -80,8 +122,6 @@ public function index()
 
     return response()->json($result, 200);
 }
-
-
 
 
 
@@ -117,10 +157,11 @@ public function index()
             'college_id' => 'required|exists:colleges,id',
             'department_id' => 'required|exists:departments,id',
             'level_id' => 'required|exists:levels,id',
-                'station_id' => 'required|exists:stations,id',   // هنا
-
+          
             'days' => 'nullable|array',
-            'days.*' => 'exists:days,id'
+           'days.*' => 'exists:days,id',
+'pickup_station_id' => 'nullable|exists:stations,id',
+'dropoff_station_id' => 'nullable|exists:stations,id',
         ]);
 
         $student = Student::create([
@@ -134,16 +175,12 @@ public function index()
             'college_id' => $request->college_id,
             'department_id' => $request->department_id,
             'level_id' => $request->level_id,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
+       'pickup_station_id' => $request->pickup_station_id,
+'dropoff_station_id' => $request->dropoff_station_id,
 
         ]);
-        DB::table('station_student')->insert([
-    'student_id' => $student->id,
-    'station_id' => $request->station_id,
-    'type' => 'pickup',
-    'created_at' => now(),
-    'updated_at' => now()
-]);
+
 
         // ربط الأيام
         $student->days()->sync($request->days ?? []);
