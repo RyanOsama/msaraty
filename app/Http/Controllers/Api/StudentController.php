@@ -199,57 +199,64 @@ public function index()
     }
 
     // تحديث طالب
-    public function update(Request $request, $id)
-    {
-        $student = Student::find($id);
+  public function update(Request $request, $id)
+{
+    $student = Student::findOrFail($id);
 
-        if (!$student) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Student not found'
-            ], 404);
-        }
+    $request->validate([
+        'user_id' => 'sometimes|exists:users,id',
+        'name' => 'sometimes',
+        'university_number' => 'sometimes|unique:students,university_number,' . $id,
+        'phone' => 'nullable',
+        'city' => 'nullable',
+        'gender' => 'nullable',
+        'state' => 'nullable',
 
-        $request->validate([
-                 'user_id' => 'required|exists:users,id',
-            'name' => 'required',
-            'university_number' => 'required|unique:students,university_number,' . $id,
-            'university_id' => 'required|exists:universities,id',
-            'college_id' => 'required|exists:colleges,id',
-            'department_id' => 'required|exists:departments,id',
-            'level_id' => 'required|exists:levels,id',
-            'days' => 'nullable|array',
-            'days.*' => 'exists:days,id'
-        ]);
+        'university_id' => 'sometimes|exists:universities,id',
+        'college_id' => 'sometimes|exists:colleges,id',
+        'department_id' => 'sometimes|exists:departments,id',
+        'level_id' => 'sometimes|exists:levels,id',
 
-        $student->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'university_number' => $request->university_number,
-            'city' => $request->city,
-            'gender' => $request->gender,
-            'state' => $request->state,
-            'university_id' => $request->university_id,
-            'college_id' => $request->college_id,
-            'department_id' => $request->department_id,
-            'level_id' => $request->level_id,
-              'user_id' => $request->user_id
-        ]);
+        'days' => 'nullable|array',
+        'days.*' => 'exists:days,id',
 
-        $student->days()->sync($request->days ?? []);
+        'pickup_station_id' => 'nullable|exists:stations,id',
+        'dropoff_station_id' => 'nullable|exists:stations,id',
+    ]);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Student updated successfully',
-            'data' => $student->load([
-                'university',
-                'college',
-                'department',
-                'level',
-                'days'
-            ])
-        ], 200);
+    $student->update([
+        'name' => $request->name ?? $student->name,
+        'phone' => $request->phone ?? $student->phone,
+        'university_number' => $request->university_number ?? $student->university_number,
+        'city' => $request->city ?? $student->city,
+        'gender' => $request->gender ?? $student->gender,
+        'state' => $request->state ?? $student->state,
+        'university_id' => $request->university_id ?? $student->university_id,
+        'college_id' => $request->college_id ?? $student->college_id,
+        'department_id' => $request->department_id ?? $student->department_id,
+        'level_id' => $request->level_id ?? $student->level_id,
+        'user_id' => $request->user_id ?? $student->user_id,
+        'pickup_station_id' => $request->pickup_station_id ?? $student->pickup_station_id,
+        'dropoff_station_id' => $request->dropoff_station_id ?? $student->dropoff_station_id,
+    ]);
+
+    // تحديث الأيام إذا تم إرسالها
+    if ($request->has('days')) {
+        $student->days()->sync($request->days);
     }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Student updated successfully',
+        'data' => $student->load([
+            'university',
+            'college',
+            'department',
+            'level',
+            'days'
+        ])
+    ]);
+}
 
     // حذف طالب
     public function destroy($id)
