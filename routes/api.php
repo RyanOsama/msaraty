@@ -152,3 +152,23 @@ Route::get('students/{id}', [StudentController::class, 'show']);
 Route::post('students', [StudentController::class, 'store']);
 Route::put('students/{id}', [StudentController::class, 'update']);
 Route::delete('students/{id}', [StudentController::class, 'destroy']);
+
+
+
+
+
+
+use App\Http\Controllers\Api\DriverController;
+
+Route::get('/drivers', [DriverController::class, 'index']);
+Route::post('/drivers', [DriverController::class, 'store']);
+Route::patch('/drivers/{driver}', [DriverController::class, 'update']);
+Route::delete('/drivers/{driver}', [DriverController::class, 'destroy']);
+
+
+use App\Http\Controllers\Api\BusController;
+
+Route::get('/buses', [BusController::class, 'index']);
+Route::post('/buses', [BusController::class, 'store']);
+Route::patch('/buses/{bus}', [BusController::class, 'update']);
+Route::delete('/buses/{bus}', [BusController::class, 'destroy']);
