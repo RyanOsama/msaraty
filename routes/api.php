@@ -87,8 +87,7 @@ Route::get('/assign', [RouteStationController::class, 'index']);
 Route::post('/assign', [RouteStationController::class, 'store']);
 Route::patch('/assign/{id}', [RouteStationController::class, 'updateOrder']);
 Route::put('/assign/bulk-order', [RouteStationController::class, 'bulkUpdateOrder']);
-Route::delete('/assign/{id}', [RouteStationController::class, 'destroy']);
-
+Route::delete('/assign/{route_id}', [RouteStationController::class, 'destroy']);
 
 
 use App\Http\Controllers\Api\UniversityController;

@@ -108,15 +108,16 @@ public function updateOrder(Request $request, $routeId)
     ]);
 }
     // 
-
- public function destroy($id)
+public function destroy($route_id)
 {
-    $routeStation = RouteStation::find($id);
+    $routeStation = RouteStation::where('route_id', $route_id)
+        ->orderBy('order', 'asc')
+        ->first();
 
     if (!$routeStation) {
         return response()->json([
             'status' => false,
-            'message' => 'الربط غير موجود'
+            'message' => 'لا توجد محطات في هذا المسار'
         ], 404);
     }
 
@@ -124,7 +125,7 @@ public function updateOrder(Request $request, $routeId)
 
     return response()->json([
         'status' => true,
-        'message' => 'تم حذف المحطة من المسار'
+        'message' => 'تم حذف أول محطة من المسار'
     ]);
 }
    
