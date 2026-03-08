@@ -90,7 +90,9 @@ public function index()
         'department',
         'level',
         'pickupStation',
-        'dropoffStation'
+        'dropoffStation',
+                'days'
+
     ])->get();
 
     $result = $students->map(function ($student) {
@@ -114,6 +116,7 @@ public function index()
 
             'pickup_station_id' => $student->pickup_station_id,
             'dropoff_station_id' => $student->dropoff_station_id,
+             'days' => $student->days->pluck('id')->toArray(),
 
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,
