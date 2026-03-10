@@ -1,0 +1,22 @@
+[
+  {
+    "id": "integer",
+    "name": "string",
+    "phone": "string",
+    "university_number": "string",
+    "city": "string",
+    "gender": "string",
+    "state": "string",
+    "user_id": "integer",
+    "university_id": "integer",
+    "college_id": "integer",
+    "department_id": "integer",
+    "level_id": "integer",
+    "pickup_station_id": "integer",
+    "dropoff_station_id": "integer",
+    "days": ["integer"],
+    "created_at": "datetime",
+    "updated_at": "datetime"
+  }
+]
+

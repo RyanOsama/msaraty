@@ -1,0 +1,16 @@
+{
+  "user_id": "integer (optional)",
+  "name": "string (optional)",
+  "university_number": "string (optional)",
+  "phone": "string | null",
+  "city": "string | null",
+  "gender": "string | null",
+  "state": "string | null",
+  "university_id": "integer (optional)",
+  "college_id": "integer (optional)",
+  "department_id": "integer (optional)",
+  "level_id": "integer (optional)",
+  "pickup_station_id": "integer | null",
+  "dropoff_station_id": "integer | null",
+  "days": ["integer"]
+}
