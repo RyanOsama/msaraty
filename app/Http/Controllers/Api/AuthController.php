@@ -66,8 +66,10 @@ public function login(loginRequest $request)
         return response()->json([
             'status' => $user->status,
             'user'   => [
+            'id'       => $user->id,
             'username' => $user->username,
             'role_id'  => $user->role_id,
+        
                  
             ],
         ], 200);
