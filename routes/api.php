@@ -171,3 +171,10 @@ Route::get('/buses', [BusController::class, 'index']);
 Route::post('/buses', [BusController::class, 'store']);
 Route::patch('/buses/{bus}', [BusController::class, 'update']);
 Route::delete('/buses/{bus}', [BusController::class, 'destroy']);
+
+use App\Http\Controllers\Api\NotificationController;
+
+Route::get('notifications', [NotificationController::class, 'index']);
+Route::post('notifications', [NotificationController::class, 'store']);
+Route::patch('notifications/{notification}', [NotificationController::class, 'update']);
+Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
