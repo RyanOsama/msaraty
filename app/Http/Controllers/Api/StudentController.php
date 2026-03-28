@@ -58,7 +58,6 @@ public function index()
 
 
 
-
 public function show($id)
 {
     $student = Student::with([
@@ -69,7 +68,7 @@ public function show($id)
         'pickupStation',
         'dropoffStation',
         'days'
-    ])->find($id);
+    ])->where('user_id', $id)->first();
 
     if (!$student) {
         return response()->json([
