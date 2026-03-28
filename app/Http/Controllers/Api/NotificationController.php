@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
+use Kreait\Laravel\Firebase\Facades\Firebase;
+use App\Models\DeviceToken;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -72,4 +75,40 @@ class NotificationController extends Controller
             'message' => 'تم حذف الاشعار بنجاح',
         ]);
     }
+
+
+
+public function sendFirebaseNotification($id)
+{
+    $notification = Notification::findOrFail($id);
+
+    $tokens = DeviceToken::where('group', $notification->target_group)
+        ->pluck('token')
+        ->toArray();
+
+    if(empty($tokens)){
+        return response()->json([
+            'message' => 'لا يوجد أجهزة لاستقبال الإشعار'
+        ]);
+    }
+
+    $messaging = Firebase::messaging();
+
+    foreach ($tokens as $token) {
+
+        $message = CloudMessage::withTarget('token', $token)
+            ->withNotification(
+                FirebaseNotification::create(
+                    $notification->title,
+                    $notification->message
+                )
+            );
+
+        $messaging->send($message);
+    }
+
+    return response()->json([
+        'message' => 'تم إرسال الإشعار بنجاح'
+    ]);
+}
 }

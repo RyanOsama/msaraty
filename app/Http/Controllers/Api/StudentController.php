@@ -59,7 +59,51 @@ public function index()
 
 
 
+public function show($id)
+{
+    $student = Student::with([
+        'university',
+        'college',
+        'department',
+        'level',
+        'pickupStation',
+        'dropoffStation',
+        'days'
+    ])->find($id);
 
+    if (!$student) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Student not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'id' => $student->id,
+        'name' => $student->name,
+        'phone' => $student->phone,
+        'university_number' => $student->university_number,
+        'city' => $student->city,
+
+        'gender' => in_array($student->gender, ['رجل', 'ذكر']) ? 'ذكر' : 'أنثى',
+
+        'state' => strtolower($student->state) === 'active' ? 'active' : 'inactive',
+
+        'user_id' => $student->user_id,
+        'university_id' => $student->university_id,
+        'college_id' => $student->college_id,
+        'department_id' => $student->department_id,
+        'level_id' => $student->level_id,
+
+        'pickup_station_id' => $student->pickup_station_id,
+        'dropoff_station_id' => $student->dropoff_station_id,
+
+        'days' => $student->days->pluck('id')->toArray(),
+
+        'created_at' => $student->created_at,
+        'updated_at' => $student->updated_at,
+    ], 200);
+}
 
 
 

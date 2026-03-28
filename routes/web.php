@@ -304,3 +304,14 @@ Route::put('/buses/{bus}', [BusController::class, 'update'])
 // حذف باص
 Route::delete('/buses/{bus}', [BusController::class, 'destroy'])
     ->name('buses.destroy');
+
+
+
+    use App\Http\Controllers\FirebaseTestController;
+
+// Route::get('/firebase-test', [FirebaseTestController::class, 'test']);
+
+
+Route::get('/firebase-test', function(){
+    return view('firebase-test');
+});

@@ -147,7 +147,7 @@ Route::delete('days/{id}', [DayController::class, 'destroy']);
 use App\Http\Controllers\Api\StudentController;
 
 Route::get('students', [StudentController::class, 'index']);
-Route::get('students/{id}', [StudentController::class, 'show']);
+Route::get('/students/{id}', [StudentController::class, 'show']);
 Route::post('students', [StudentController::class, 'store']);
 Route::patch('students/{id}', [StudentController::class, 'update']);
 Route::delete('students/{id}', [StudentController::class, 'destroy']);
@@ -178,3 +178,14 @@ Route::get('notifications', [NotificationController::class, 'index']);
 Route::post('notifications', [NotificationController::class, 'store']);
 Route::patch('notifications/{notification}', [NotificationController::class, 'update']);
 Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
+
+Route::get('/send-notification/{id}', [NotificationController::class, 'sendFirebaseNotification']);
+
+
+
+   
+
+
+use App\Http\Controllers\API\DeviceTokenController;
+
+Route::post('/save-token', [DeviceTokenController::class, 'saveToken']);
