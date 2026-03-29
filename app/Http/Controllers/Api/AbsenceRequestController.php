@@ -27,7 +27,7 @@ public function store(Request $request)
     $request->validate([
         'user_id' => 'required|exists:users,id',
         'date' => 'required|date',
-        'type' => 'required|in:pickup,dropoff',
+        'type' => 'required|in:pickup,dropoff,fill',
     ]);
 
     // نجيب الطالب من user_id
@@ -53,5 +53,26 @@ public function store(Request $request)
         'type' => $absence->type,
     ], 201);
 }
+// public function store(Request $request)
+// {
+//     $request->validate([
+//         'student_id' => 'required|exists:students,id',
+//         'date' => 'required|date',
+//         'type' => 'required|in:pickup,dropoff',
+//     ]);
+
+//     $absence = \App\Models\AbsenceRequest::create([
+//         'student_id' => $request->student_id,
+//         'date' => $request->date,
+//         'type' => $request->type,
+//     ]);
+
+//     return response()->json([
+//         'id' => $absence->id,
+//         'student_id' => $absence->student_id,
+//         'date' => $absence->date,
+//         'type' => $absence->type,
+//     ], 201);
+// }
 
 }
