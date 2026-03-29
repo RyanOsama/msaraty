@@ -61,6 +61,9 @@ public function dropoffStation()
     return $this->belongsTo(Station::class, 'dropoff_station_id');
 }
 
-
+public function absenceRequests()
+{
+    return $this->hasMany(AbsenceRequest::class);
+}
 
 }

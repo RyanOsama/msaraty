@@ -188,3 +188,16 @@ Route::get('/send-notification/{id}', [NotificationController::class, 'sendFireb
 use App\Http\Controllers\API\DeviceTokenController;
 
 Route::post('/save-token', [DeviceTokenController::class, 'saveToken']);
+
+
+
+
+use App\Http\Controllers\Api\AbsenceRequestController;
+
+// إرسال طلب غياب (من الجوال)
+Route::post('/absence-requests', [AbsenceRequestController::class, 'store']);
+
+// عرض كل الغيابات
+Route::get('/absence-requests', [AbsenceRequestController::class, 'index']);
+
+
