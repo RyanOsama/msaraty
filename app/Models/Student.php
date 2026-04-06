@@ -65,5 +65,8 @@ public function absenceRequests()
 {
     return $this->hasMany(AbsenceRequest::class);
 }
-
+public function trips()
+{
+    return $this->belongsToMany(Trip::class, 'trip_student');
+}
 }

@@ -200,4 +200,9 @@ Route::post('/absence-requests', [AbsenceRequestController::class, 'store']);
 // عرض كل الغيابات
 Route::get('/absence-requests', [AbsenceRequestController::class, 'index']);
 
+use App\Http\Controllers\Api\TripController;
 
+Route::get('trips', [TripController::class, 'index']);
+Route::post('trips', [TripController::class, 'store']);
+Route::patch('trips/{id}', [TripController::class, 'update']); // 🔥 PATCH
+Route::delete('trips/{id}', [TripController::class, 'destroy']);
