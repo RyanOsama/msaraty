@@ -13,7 +13,7 @@ class Trip extends Model
         'trip_time',
         'deadline',
         'assign_id',
-        'route_id',
+        // 'route_id',
         'bus_id',
         'driver_id',
         'created_by',

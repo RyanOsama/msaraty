@@ -47,7 +47,7 @@ public function store(Request $request)
         'deadline' => 'required|date',
 
         'assign_id' => 'required|exists:route_station,id',
-        'route_id' => 'required|exists:routes,id',
+        // 'route_id' => 'required|exists:routes,id',
         'bus_id' => 'required|exists:buses,id',
         'driver_id' => 'required|exists:drivers,id',
         'created_by' => 'required|exists:users,id',

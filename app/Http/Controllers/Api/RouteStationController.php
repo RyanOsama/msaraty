@@ -14,27 +14,33 @@ use Illuminate\Http\Request;
 class RouteStationController extends Controller
 {
 
-    public function index()
+ public function index()
 {
     $routes = Route::with(['stations' => function ($q) {
         $q->orderBy('route_station.order');
     }])->get();
 
     $assign = $routes->map(function ($route) {
+
+        // 🔥 نجيب assign_id الحقيقي من route_station
+        $assignId = \DB::table('route_station')
+            ->where('route_id', $route->id)
+            ->value('id');
+
         return [
+            'id' => $assignId, // ✅ assign_id الصحيح
             'route_id' => $route->id,
+
             'stations' => $route->stations
                 ->sortBy('pivot.order')
                 ->pluck('id')
                 ->values()
                 ->toArray(),
-            'id' => $route->id
         ];
     });
 
     return response()->json($assign);
 }
-
 
 
 
