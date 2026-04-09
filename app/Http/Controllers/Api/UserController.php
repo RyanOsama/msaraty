@@ -44,16 +44,7 @@ public function getRoles()
         return response()->json(     $users
         ,200);
     }
-//     public function index()
-// {
-//     return User::select(
-//         'id',
-//         'username',
-//         'role_id',
-//         'status',
-//         'created_at'
-//     )->orderBy('id', 'desc')->get();
-// }
+
 
 public function store(Request $request)
 {
@@ -131,5 +122,34 @@ public function destroy($id)
 }
 
 
+
+
+
+public function updatePassword(Request $request)
+{
+    $request->validate([
+        'id' => 'required|exists:users,id',
+        'current_password' => 'required',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = \App\Models\User::find($request->id);
+
+    // 🔥 تحقق من الباسورد القديم
+    if (!Hash::check($request->current_password, $user->password)) {
+        return response()->json([
+            'message' => 'كلمة المرور الحالية غير صحيحة'
+        ], 422);
+    }
+
+    // 🔥 تحديث الباسورد
+    $user->update([
+        'password' => Hash::make($request->password)
+    ]);
+
+    return response()->json([
+        'message' => 'تم تغيير كلمة المرور بنجاح'
+    ], 200);
+}
 }
 
