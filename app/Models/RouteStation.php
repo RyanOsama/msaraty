@@ -23,4 +23,5 @@ class RouteStation extends Model
     {
         return $this->belongsTo(Station::class);
     }
+
 }

@@ -122,7 +122,6 @@ public function destroy($id)
     ]);
 }
 
-
 public function checkStudentTripByDate(Request $request)
 {
     $request->validate([
@@ -130,7 +129,8 @@ public function checkStudentTripByDate(Request $request)
         'date' => 'required|date',
     ]);
 
-    $trip = Trip::whereDate('trip_date', $request->date)
+    $trip = Trip::with(['driver', 'bus']) 
+        ->whereDate('trip_date', $request->date)
         ->whereHas('students', function ($q) use ($request) {
             $q->where('student_id', $request->student_id);
         })
@@ -142,8 +142,23 @@ public function checkStudentTripByDate(Request $request)
         ]);
     }
 
-    return response()->json([
-        'trip' => $trip
-    ]);
+
+return response()->json([
+    'id' => $trip->id,
+    'trip_name' => $trip->trip_name,
+    'trip_type' => $trip->trip_type,
+    'trip_date' => $trip->trip_date,
+    'trip_time' => $trip->trip_time,
+
+   
+    'route_name' => $trip->assign->route->route_name ?? null,
+
+   
+    'driver_name' => $trip->driver->name_driver ?? null,
+    'driver_phone' => $trip->driver->phone ?? null,
+
+   
+    'bus_number_passengers' => $trip->bus->number_passengers ?? null,
+]);
 }
 }

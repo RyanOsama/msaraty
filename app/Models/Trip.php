@@ -23,4 +23,17 @@ class Trip extends Model
 {
     return $this->belongsToMany(Student::class, 'trip_student');
 }
+public function driver()
+{
+    return $this->belongsTo(Driver::class);
+}
+
+public function bus()
+{
+    return $this->belongsTo(Bus::class);
+}
+public function assign()
+{
+    return $this->belongsTo(RouteStation::class, 'assign_id');
+}
 }
