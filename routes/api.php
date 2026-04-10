@@ -206,3 +206,4 @@ Route::get('trips', [TripController::class, 'index']);
 Route::post('trips', [TripController::class, 'store']);
 Route::patch('trips/{id}', [TripController::class, 'update']); // 🔥 PATCH
 Route::delete('trips/{id}', [TripController::class, 'destroy']);
+Route::post('/student-trip-by-date', [TripController::class, 'checkStudentTripByDate']);

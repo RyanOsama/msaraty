@@ -121,4 +121,29 @@ public function destroy($id)
         'message' => 'Trip deleted successfully'
     ]);
 }
+
+
+public function checkStudentTripByDate(Request $request)
+{
+    $request->validate([
+        'student_id' => 'required|exists:students,id',
+        'date' => 'required|date',
+    ]);
+
+    $trip = Trip::whereDate('trip_date', $request->date)
+        ->whereHas('students', function ($q) use ($request) {
+            $q->where('student_id', $request->student_id);
+        })
+        ->first();
+
+    if (!$trip) {
+        return response()->json([
+            'message' => 'الطالب غير مسجل في أي رحلة بهذا التاريخ',
+        ]);
+    }
+
+    return response()->json([
+        'trip' => $trip
+    ]);
+}
 }
