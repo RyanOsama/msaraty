@@ -22,7 +22,7 @@ class TripController extends Controller
             'deadline' => $trip->deadline,
 
             'assign_id' => $trip->assign_id,
-            'route_id' => $trip->route_id,
+            // 'route_id' => $trip->route_id,
             'bus_id' => $trip->bus_id,
             'driver_id' => $trip->driver_id,
             'created_by' => $trip->created_by,
