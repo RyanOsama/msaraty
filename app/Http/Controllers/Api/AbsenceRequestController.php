@@ -45,14 +45,24 @@ public function store(Request $request)
         'type' => $request->type,
     ]);
 
-    // 👇 نفس أسلوبك (بدون مصفوفة داخل مصفوفة)
     return response()->json([
         'id' => $absence->id,
-        'student_id' => $absence->student_id,
+        // 'student_id' => $absence->student_id,
+        'user_id' => $request->user_id,
         'date' => $absence->date,
         'type' => $absence->type,
     ], 201);
 }
+
+
+
+
+
+
+
+
+
+
 // public function store(Request $request)
 // {
 //     $request->validate([
