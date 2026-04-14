@@ -27,7 +27,7 @@ public function store(Request $request)
     $request->validate([
         'user_id' => 'required|exists:users,id',
         'date' => 'required|date',
-        'type' => 'required|in:pickup,dropoff,fill',
+        'type' => 'required|in:pickup,dropoff,full',
     ]);
 
     // نجيب الطالب من user_id

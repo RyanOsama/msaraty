@@ -36,4 +36,8 @@ public function assign()
 {
     return $this->belongsTo(RouteStation::class, 'assign_id');
 }
+public function cancellations()
+{
+    return $this->hasMany(TripCancellation::class);
+}
 }

@@ -207,3 +207,12 @@ Route::post('trips', [TripController::class, 'store']);
 Route::patch('trips/{id}', [TripController::class, 'update']); // 🔥 PATCH
 Route::delete('trips/{id}', [TripController::class, 'destroy']);
 Route::post('/student-trip-by-date', [TripController::class, 'checkStudentTripByDate']);
+
+
+use App\Http\Controllers\Api\TripCancellationController;
+
+Route::get('/trip-cancellations', [TripCancellationController::class, 'index']);
+Route::post('/trip-cancellations', [TripCancellationController::class, 'store']);
+Route::post('/trip-cancellations-check', [TripCancellationController::class, 'check']);
+Route::delete('/trip-cancellations/{id}', [TripCancellationController::class, 'destroy']);
+Route::post('/trip-cancellations-update-status', [TripCancellationController::class, 'updateStatus']);
