@@ -95,11 +95,13 @@ public function update(Request $request, $id)
 
     $trip->update($request->except('student_ids'));
 
-    // 🔥 تحديث الطلاب
-    if ($request->has('student_ids')) {
-        $trip->students()->sync($request->student_ids);
-    }
+  $students = [];
 
+foreach ($request->student_ids ?? [] as $studentId) {
+    $students[$studentId] = ['status' => 'approved'];
+}
+
+$trip->students()->syncWithoutDetaching($students);
     return response()->json([
         'status' => true,
         'message' => 'Trip updated successfully',
