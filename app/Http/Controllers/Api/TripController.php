@@ -58,9 +58,13 @@ public function store(Request $request)
 
     $trip = Trip::create($request->except('student_ids'));
 
-    // 🔥 ربط الطلاب
-    $trip->students()->attach($request->student_ids ?? []);
+   $students = [];
 
+foreach ($request->student_ids ?? [] as $studentId) {
+    $students[$studentId] = ['status' => 'approved']; // 🔥 هنا التغيير
+}
+
+$trip->students()->attach($students);
     return response()->json([
         'status' => true,
         'message' => 'Trip created successfully',
