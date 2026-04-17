@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::get('/test900', function () {
+    return view('test900');
+});
 
 use App\Http\Controllers\Api\RouteController;
 
