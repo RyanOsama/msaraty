@@ -1,1509 +1,305 @@
-<!-- <!DOCTYPE html>
-<html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    
     <meta charset="UTF-8">
-    <title>Admin Test Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masarat API | Neural Network Interface</title>
+    <style>
+        /* --- التصميم العام --- */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --bg-dark: #020617;
+            --glass: rgba(10, 15, 30, 0.7);
+        }
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 1. الخلفية المتحركة (الشبكة العصبية) --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1; /* خلف كل شيء */
+        }
+
+        /* طبقة تظليل فوق الخلفية لزيادة التباين */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, var(--bg-dark) 90%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* --- 2. الروبوت التقني --- */
+        .robot-head {
+            position: relative;
+            width: 110px; height: 110px;
+            margin-bottom: 20px;
+            background: var(--glass);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: transform 0.1s ease;
+        }
+
+        .eye {
+            width: 14px; height: 14px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            margin: 0 12px;
+            box-shadow: 0 0 20px var(--neon-cyan);
+            position: relative;
+        }
+
+        .pupil {
+            width: 5px; height: 5px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- 3. لوحة البيانات --- */
+        .dashboard-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 25px;
+            width: 90%;
+            max-width: 800px;
+            padding: 40px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.7);
+            z-index: 10;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(to left, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .sub-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sub-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .member-tag {
+            display: inline-block;
+            background: rgba(188, 19, 254, 0.2);
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin: 4px;
+            font-size: 0.85rem;
+            border: 1px solid var(--neon-purple);
+        }
+
+        .footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .host-badge {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            padding: 4px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container my-4">
+    <canvas id="particle-canvas"></canvas>
+    <div class="overlay"></div>
 
-    <h1 class="mb-4 text-center"> لوحة تجريبية  للاداره</h1>
+    <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;">
+        
+        <div class="robot-head" id="robot">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+        </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+        <div class="dashboard-card">
+            <div class="header">
+                <div class="title">MSARATY CORE</div>
+                <div style="font-family: monospace; color: var(--neon-cyan);">V2.5.0_STABLE</div>
+            </div>
 
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    <!-- ================= USERS ================= -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">👤 المستخدمون</div>
-        <div class="card-body table-responsive">
-
-            <table class="table table-bordered align-middle text-center">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>تعديل</th>
-                    <th>حذف</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach(\App\Models\User::all() as $user)
-                    <tr>
-                        <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
-                            @csrf
-                            @method('PUT')
-
-                            <td>{{ $user->id }}</td>
-                            <td><input class="form-control" name="username" value="{{ $user->username }}"></td>
-
-                            <td>
-                                <select class="form-select" name="role_id">
-                                    @foreach(\App\Models\Role::whereIn('name',['student','driver','admin'])->get() as $role)
-                                        <option value="{{ $role->id }}" @selected($user->role_id==$role->id)>
-                                            {{ $role->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-
-                            <td>
-                                <select class="form-select" name="status">
-                                    <option value="pending" @selected($user->status=='pending')>pending</option>
-                                    <option value="approved" @selected($user->status=='approved')>approved</option>
-                                    <option value="rejected" @selected($user->status=='rejected')>rejected</option>
-                                </select>
-                            </td>
-
-                            <td><button class="btn btn-sm btn-warning">تعديل</button></td>
-                        </form>
-
-                        <td>
-                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger"
-                                        onclick="return confirm('متأكد من الحذف؟')">حذف</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-
-            <hr>
-
-            <h5>➕ إضافة مستخدم</h5>
-            <form class="row g-2" method="POST" action="{{ route('admin.users.store') }}">
-                @csrf
-                <div class="col-md-3">
-                    <input class="form-control" name="username" placeholder="Username" required>
+            <div class="card-content">
+                <div class="sub-card" style="grid-column: span 2;">
+                    <h3>فكرة المشروع / Project Concept</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+نظام ذكي لإدارة النقل الجامعي يربط الطلاب بالباصات والمسارات بشكل منظم.
+يهدف إلى تحسين كفاءة النقل وتقليل الفوضى وتسهيل متابعة الرحلات                    </p>
                 </div>
-                <div class="col-md-3">
-                    <input class="form-control" type="password" name="password" placeholder="Password" required>
+
+                <div class="sub-card">
+                    <h3>فريق التطوير / The Team</h3>
+                    <div class="member-tag"> OSAMA WEBRAN </div>
+                    <div class="member-tag">RYAN OSAMA</div>
+                    <div class="member-tag">SABER BAFADEL  </div>
+                    <div class="member-tag">JOMAAN BIN SALMAN</div>
                 </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="role_id">
-                        @foreach(\App\Models\Role::whereIn('name',['student','driver','admin'])->get() as $role)
-                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                        @endforeach
-                    </select>
+
+                <div class="sub-card">
+                    <h3>حالة النظام / System Info</h3>
+                    <p style="font-size: 0.85rem; margin: 0; line-height: 1.8;">
+                        • المحرك: <span style="color:var(--neon-purple)">Laravel</span><br>
+                        • الاستضافة: <span style="color:var(--neon-cyan)">Cloud Secured</span><br>
+                        • التوقيت: <span id="clock">00:00:00</span>
+                    </p>
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select" name="status">
-                        <option value="approved">approved</option>
-                        <option value="pending">pending</option>
-                        <option value="rejected">rejected</option>
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <button class="btn btn-success w-100">إضافة</button>
-                </div>
-            </form>
+            </div>
+
+            <div class="footer">
+                <div>© 2026 جميع الحقوق محفوظة لـ مسارات</div>
+                <div>صاحب الاستضافة: <span class="host-badge">ABDUL SALAM AMIN</span></div>
+            </div>
         </div>
     </div>
 
-    <!-- ================= ROUTES ================= -->
-   <!-- ================= ROUTES ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-success text-white">🛣️ الخطوط</div>
-    <div class="card-body">
-
-        <!-- إضافة خط -->
-        <form class="d-flex gap-2 mb-3" method="POST" action="{{ route('admin.routes.store') }}">
-            @csrf
-            <input class="form-control" name="route_name" placeholder="اسم الخط" required>
-            <button class="btn btn-success">إضافة</button>
-        </form>
-
-        <!-- جدول الخطوط -->
-        <table class="table table-bordered text-center align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>اسم الخط</th>
-                    <th>تعديل</th>
-                    <th>حذف</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach(\App\Models\Route::all() as $route)
-                <tr>
-                    <!-- فورم التعديل -->
-                    <form method="POST" action="{{ route('admin.routes.update', $route->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $route->id }}</td>
-                        <td>
-                            <input
-                                class="form-control"
-                                name="route_name"
-                                value="{{ $route->route_name }}"
-                            >
-                        </td>
-
-                        <!-- زر التعديل -->
-                        <td>
-                            <button type="submit" class="btn btn-warning btn-sm w-100">
-                                تعديل
-                            </button>
-                        </td>
-                    </form>
-
-                    <!-- زر الحذف -->
-                    <td>
-                        <form method="POST" action="{{ route('admin.routes.destroy', $route->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button
-                                type="submit"
-                                class="btn btn-danger btn-sm w-100"
-                                onclick="return confirm('متأكد من الحذف؟')"
-                            >
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
-    <!-- ================= STATIONS ================= -->
-    <div class="card mb-4">
-    <div class="card-header bg-info text-white">📍 المحطات</div>
-    <div class="card-body">
-
-        <!-- إضافة محطة -->
-        <form class="row g-2 mb-3" method="POST" action="{{ route('admin.stations.store') }}">
-            @csrf
-            <div class="col">
-                <input class="form-control" name="station_name" placeholder="اسم المحطة" required>
-            </div>
-            <div class="col">
-                <input class="form-control" name="location_x" placeholder="X" required>
-            </div>
-            <div class="col">
-                <input class="form-control" name="location_y" placeholder="Y" required>
-            </div>
-            <div class="col">
-                <input class="form-control" name="description" placeholder="الوصف">
-            </div>
-            <div class="col">
-                <button class="btn btn-success w-100">إضافة</button>
-            </div>
-        </form>
-
-        <!-- جدول المحطات -->
-        <table class="table table-bordered text-center align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>اسم المحطة</th>
-                    <th>X</th>
-                    <th>Y</th>
-                    <th>الوصف</th>
-                    <th>تعديل</th>
-                    <th>حذف</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach(\App\Models\Station::all() as $station)
-                <tr>
-                    <!-- فورم التعديل -->
-                    <form method="POST" action="{{ route('admin.stations.update', $station->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $station->id }}</td>
-                        <td>
-                            <input class="form-control" name="station_name" value="{{ $station->station_name }}">
-                        </td>
-                        <td>
-                            <input class="form-control" name="location_x" value="{{ $station->location_x }}">
-                        </td>
-                        <td>
-                            <input class="form-control" name="location_y" value="{{ $station->location_y }}">
-                        </td>
-                        <td>
-                            <input class="form-control" name="description" value="{{ $station->description }}">
-                        </td>
-
-                        <!-- زر التعديل -->
-                        <td>
-                            <button type="submit" class="btn btn-warning btn-sm w-100">
-                                تعديل
-                            </button>
-                        </td>
-                    </form>
-
-                    <!-- زر الحذف -->
-                    <td>
-                        <form method="POST" action="{{ route('admin.stations.destroy', $station->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button
-                                type="submit"
-                                class="btn btn-danger btn-sm w-100"
-                                onclick="return confirm('متأكد من الحذف؟')"
-                            >
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
-
-    <!-- ================= ROUTE STATIONS ================= -->
-  <div class="card mb-4">
-    <div class="card-header bg-secondary text-white">
-        🔗 ربط خط بمحطات (بالترتيب)
-    </div>
-
-    <div class="card-body">
-        <form class="row g-3" method="POST" action="{{ route('admin.route-stations.store') }}">
-            @csrf
-
-            <!-- الخط -->
-            <div class="col-md-4">
-                <label class="form-label fw-bold">🛣️ الخط</label>
-                <select class="form-select" name="route_id" required>
-                    <option value="">-- اختر خط --</option>
-                    @foreach(\App\Models\Route::all() as $route)
-                        <option value="{{ $route->id }}">{{ $route->route_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- المحطات -->
-            <div class="col-md-6">
-                <label class="form-label fw-bold">📍 المحطات + الترتيب</label>
-
-                <div class="border rounded p-3" style="max-height: 260px; overflow-y: auto;">
-                    @foreach(\App\Models\Station::all() as $index => $station)
-                        <div class="d-flex align-items-center mb-2 gap-2">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                name="stations[{{ $index }}][station_id]"
-                                value="{{ $station->id }}"
-                                id="station_{{ $station->id }}"
-                            >
-
-                            <label class="form-check-label flex-grow-1" for="station_{{ $station->id }}">
-                                {{ $station->station_name }}
-                            </label>
-
-                            <input
-                                type="number"
-                                class="form-control form-control-sm"
-                                name="stations[{{ $index }}][order]"
-                                placeholder="الترتيب"
-                                style="width: 90px;"
-                                min="1"
-                            >
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- زر -->
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-success w-100">
-                    ربط
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-</div>
-
-</div>
-
-<!-- ================= ROUTE ↔ STATIONS MANAGE ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-dark text-white">
-        📋 إدارة محطات الخطوط
-    </div>
-
-    <div class="card-body">
-
-        @foreach(\App\Models\Route::with('stations')->get() as $route)
-            <div class="border rounded mb-4">
-
-                <div class="bg-light px-3 py-2 fw-bold">
-                    🛣️ {{ $route->route_name }}
-                </div>
-
-                <!-- إضافة محطة جديدة -->
-                <div class="p-3 border-bottom">
-                 <!-- إضافة أكثر من محطة لنفس الخط -->
-<!-- إضافة محطات غير مرتبطة فقط -->
-<form method="POST" action="{{ route('admin.route-stations.store') }}">
-    @csrf
-
-    <input type="hidden" name="route_id" value="{{ $route->id }}">
-
-    @php
-        $linkedStationIds = $route->stations->pluck('id')->toArray();
-        $availableStations = \App\Models\Station::whereNotIn('id', $linkedStationIds)->get();
-    @endphp
-
-    @if($availableStations->count())
-
-        <div class="border rounded p-3 mb-3" style="max-height:260px; overflow-y:auto;">
-
-            @foreach($availableStations as $index => $station)
-                <div class="d-flex align-items-center gap-2 mb-2">
-
-                    <!-- اختيار المحطة -->
-                    <input
-                        type="checkbox"
-                        class="form-check-input"
-                        name="stations[{{ $index }}][station_id]"
-                        value="{{ $station->id }}"
-                    >
-
-                    <span class="flex-grow-1">
-                        {{ $station->station_name }}
-                    </span>
-
-                    <!-- الترتيب -->
-                    <input
-                        type="number"
-                        name="stations[{{ $index }}][order]"
-                        class="form-control form-control-sm"
-                        placeholder="الترتيب"
-                        style="width:90px"
-                        min="1"
-                    >
-                </div>
-            @endforeach
-
-        </div>
-
-        <button class="btn btn-success w-100">
-            إضافة المحطات المختارة
-        </button>
-
-    @else
-        <div class="alert alert-info text-center">
-            ✅ جميع المحطات مرتبطة بهذا الخط
-        </div>
-    @endif
-</form>
-
-                </div>
-
-                <!-- جدول المحطات -->
-                @if($route->stations->count())
-                    <table class="table table-bordered text-center align-middle mb-0">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>#</th>
-                                <th>اسم المحطة</th>
-                                <th>الترتيب</th>
-                                <th>حذف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($route->stations as $station)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $station->station_name }}</td>
-
-                                <!-- تعديل الترتيب -->
-                                <td>
-                                    <form method="POST" action="{{ route('admin.route-stations.order') }}"
-                                          class="d-flex gap-2 justify-content-center">
-                                        @csrf
-                                        @method('PUT')
-
-                                        <input type="hidden" name="route_id" value="{{ $route->id }}">
-                                        <input type="hidden" name="station_id" value="{{ $station->id }}">
-
-                                        <input
-                                            type="number"
-                                            name="order"
-                                            value="{{ $station->pivot->order }}"
-                                            class="form-control form-control-sm text-center"
-                                            style="width:80px"
-                                            min="1"
-                                        >
-
-                                        <button class="btn btn-sm btn-primary">
-                                            حفظ
-                                        </button>
-                                    </form>
-                                </td>
-
-                                <!-- حذف -->
-                                <td>
-                                    <form method="POST"
-                                          action="{{ route('admin.route-stations.destroy') }}"
-                                          onsubmit="return confirm('متأكد من الحذف؟')">
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <input type="hidden" name="route_id" value="{{ $route->id }}">
-                                        <input type="hidden" name="station_id" value="{{ $station->id }}">
-
-                                        <button class="btn btn-sm btn-danger">
-                                            حذف
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="p-3 text-center text-muted">
-                        لا توجد محطات مرتبطة بهذا الخط
-                    </div>
-                @endif
-
-            </div>
-        @endforeach
-
-    </div>
-</div>
-
-{{-- إضافة طالب --}}
-<div class="card shadow mt-5">
-    <div class="card-header bg-success text-white fw-bold">
-        ➕ إضافة طالب جديد
-    </div>
-
-    <div class="card-body">
-
-        <form class="row g-3" method="POST" action="{{ route('students.store') }}">
-            @csrf
-
-            <div class="col-md-2">
-                <input class="form-control form-control-sm" name="name" placeholder="الاسم" required>
-            </div>
-
-            <div class="col-md-2">
-                <input class="form-control form-control-sm" name="university_number" placeholder="الرقم الجامعي" required>
-            </div>
-
-            <div class="col-md-2">
-                <input class="form-control form-control-sm" name="phone" placeholder="الجوال" required>
-            </div>
-
-            <div class="col-md-2">
-                <input class="form-control form-control-sm" name="city" placeholder="المدينة" required>
-            </div>
-
-            <div class="col-md-1">
-                <select class="form-select form-select-sm" name="gender">
-                     <option value="" selected disabled>اختر النوع</option>
-                    <option value="رجل">رجل</option>
-                    <option value="امرأة">امرأة</option>
-                </select>
-            </div>
-
-            <div class="col-md-1">
-                <select class="form-select form-select-sm"  name="state">
-                    <option value="" selected disabled>اختر الحاله</option>
-                    <option value="Active">نشط</option>
-                    <option value="Inactive">غير نشط</option>
-                </select>
-            </div>
-
-            {{-- الجامعة --}}
-            <div class="col-md-2">
-                <select class="form-select form-select-sm"  name="university_id">
-                     <option value="" selected disabled>اختر الجامعة</option>
-                    @foreach(\App\Models\University::all() as $uni)
-                        <option value="{{ $uni->id }}">{{ $uni->university_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- الكلية --}}
-            <div class="col-md-2">
-                <select class="form-select form-select-sm" name="college_id">
-                     <option value="" selected disabled>اختر الكليه</option>
-                    @foreach(\App\Models\College::all() as $college)
-                        <option value="{{ $college->id }}">{{ $college->college_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- القسم --}}
-            <div class="col-md-2">
-                <select name="department_id" id="department_id" class="form-select form-select-sm">
-                   <option value="" selected disabled>اختر القسم</option>
-                    @foreach(\App\Models\Department::all() as $department)
-                        <option value="{{ $department->id }}">
-                            {{ $department->department_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- المستوى --}}
-            <div class="col-md-2">
-                <select name="level_id" id="level_id" class="form-select form-select-sm">
- <option value="" selected disabled>اختر المستوى</option>                </select>
-            </div>
-{{-- محطة الصعود --}}
-<div class="col-md-2">
-    <select name="pickup_station_id" class="form-select form-select-sm" required>
-        <option value="" selected disabled>اختر محطة الصعود</option>
-        @foreach(\App\Models\Station::all() as $station)
-            <option value="{{ $station->id }}">
-                {{ $station->station_name }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-{{-- محطة النزول --}}
-<div class="col-md-2">
-    <select name="dropoff_station_id" class="form-select form-select-sm" required>
-        <option value="" selected disabled>اختر محطة النزول</option>
-        @foreach(\App\Models\Station::all() as $station)
-            <option value="{{ $station->id }}">
-                {{ $station->station_name }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-            {{-- الأيام --}}
-            <div class="col-md-3">
-                <div class="border rounded p-2 bg-light" style="max-height:120px; overflow-y:auto;">
-                    @foreach(\App\Models\Day::all() as $day)
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   name="days[]"
-                                   value="{{ $day->id }}">
-                            <label class="form-check-label small">
-                                {{ $day->day_name }}
-                            </label>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-success w-100">إضافة الطالب</button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-
-<script>
-document.getElementById('department_id').addEventListener('change', function () {
-
-    let departmentId = this.value;
-
-    if(!departmentId){
-        document.getElementById('level_id').innerHTML =
-            '<option value="">اختر المستوى</option>';
-        return;
-    }
-
-    fetch('/levels-by-department/' + departmentId)
-        .then(response => response.json())
-        .then(data => {
-
-            let levelSelect = document.getElementById('level_id');
-            levelSelect.innerHTML = '<option value="">اختر المستوى</option>';
-
-            data.forEach(level => {
-                levelSelect.innerHTML +=
-                    `<option value="${level.id}">${level.level_name}</option>`;
-            });
-
+    <script>
+        // --- كود خلفية الجسيمات (Particles) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        const numberOfParticles = 100;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.speedY = (Math.random() - 0.5) * 1.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = '#00f3ff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                
+                // رسم الخطوط بين الجسيمات القريبة
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x;
+                    const dy = particlesArray[i].y - particlesArray[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${1 - distance/150})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
         });
 
-});
-</script> -->
-
-
-<!-- ================= UNIVERSITIES ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-primary text-white fw-bold">
-        🏫 الجامعات
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-bordered align-middle text-center">
-            <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>اسم الجامعة</th>
-                <th>تعديل</th>
-                <th>حذف</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            @foreach(\App\Models\University::all() as $university)
-                <tr>
-
-                    <form method="POST"
-                          action="{{ route('universities.update', $university->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $university->id }}</td>
-
-                        <td>
-                            <input class="form-control"
-                                   name="university_name"
-                                   value="{{ $university->university_name }}">
-                        </td>
-
-                        <td>
-                            <button class="btn btn-sm btn-warning w-100">
-                                تعديل
-                            </button>
-                        </td>
-
-                    </form>
-
-                    <td>
-                        <form method="POST"
-                              action="{{ route('universities.destroy', $university->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger w-100"
-                                    onclick="return confirm('متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <hr>
-
-        <h5>➕ إضافة جامعة</h5>
-
-        <form class="row g-2"
-              method="POST"
-              action="{{ route('universities.store') }}">
-            @csrf
-
-            <div class="col-md-4">
-                <input class="form-control"
-                       name="university_name"
-                       placeholder="اسم الجامعة"
-                       required>
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-success w-100">
-                    إضافة
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-<!-- ================= COLLEGES ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-info text-white fw-bold">
-        🏫 الكليات
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-bordered align-middle text-center">
-            <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>اسم الكلية</th>
-                <th>الجامعة</th>
-                <th>تعديل</th>
-                <th>حذف</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            @foreach(\App\Models\College::with('university')->get() as $college)
-                <tr>
-
-                    <form method="POST"
-                          action="{{ route('colleges.update', $college->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $college->id }}</td>
-
-                        <td>
-                            <input class="form-control"
-                                   name="college_name"
-                                   value="{{ $college->college_name }}">
-                        </td>
-
-                        <td>
-                            <select class="form-select" name="university_id">
-                                @foreach(\App\Models\University::all() as $uni)
-                                    <option value="{{ $uni->id }}"
-                                        @selected($college->university_id==$uni->id)>
-                                        {{ $uni->university_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        <td>
-                            <button class="btn btn-sm btn-warning w-100">
-                                تعديل
-                            </button>
-                        </td>
-
-                    </form>
-
-                    <td>
-                        <form method="POST"
-                              action="{{ route('colleges.destroy', $college->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger w-100"
-                                    onclick="return confirm('متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <hr>
-
-        <h5>➕ إضافة كلية</h5>
-
-        <form class="row g-2"
-              method="POST"
-              action="{{ route('colleges.store') }}">
-            @csrf
-
-            <div class="col-md-4">
-                <input class="form-control"
-                       name="college_name"
-                       placeholder="اسم الكلية"
-                       required>
-            </div>
-
-            <div class="col-md-4">
-                <select class="form-select" name="university_id" required>
-                    <option value="">اختر الجامعة</option>
-                    @foreach(\App\Models\University::all() as $uni)
-                        <option value="{{ $uni->id }}">
-                            {{ $uni->university_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-success w-100">
-                    إضافة
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-<hr>
-
-<!-- ================= DEPARTMENTS ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-secondary text-white fw-bold">
-        🏢 الأقسام
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-bordered align-middle text-center">
-            <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>اسم القسم</th>
-                <th>الكلية</th>
-                <th>الجامعة</th>
-                <th>تعديل</th>
-                <th>حذف</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            @foreach(\App\Models\Department::with('college.university')->get() as $department)
-                <tr>
-
-                    <form method="POST"
-                          action="{{ route('departments.update', $department->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $department->id }}</td>
-
-                        <td>
-                            <input class="form-control"
-                                   name="department_name"
-                                   value="{{ $department->department_name }}">
-                        </td>
-
-                        <td>
-                            <select class="form-select" name="college_id">
-                                @foreach(\App\Models\College::with('university')->get() as $college)
-                                    <option value="{{ $college->id }}"
-                                        @selected($department->college_id==$college->id)>
-                                        {{ $college->college_name }}
-                                        ({{ $college->university->university_name }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        <td>
-                            {{ $department->college->university->university_name ?? '-' }}
-                        </td>
-
-                        <td>
-                            <button class="btn btn-sm btn-warning w-100">
-                                تعديل
-                            </button>
-                        </td>
-
-                    </form>
-
-                    <td>
-                        <form method="POST"
-                              action="{{ route('departments.destroy', $department->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger w-100"
-                                    onclick="return confirm('متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <hr>
-
-        <h5>➕ إضافة قسم</h5>
-
-        <form class="row g-2"
-              method="POST"
-              action="{{ route('departments.store') }}">
-            @csrf
-
-            <div class="col-md-4">
-                <input class="form-control"
-                       name="department_name"
-                       placeholder="اسم القسم"
-                       required>
-            </div>
-
-            <div class="col-md-4">
-                <select class="form-select" name="college_id" required>
-                    <option value="">اختر الكلية</option>
-                    @foreach(\App\Models\College::with('university')->get() as $college)
-                        <option value="{{ $college->id }}">
-                            {{ $college->college_name }}
-                            ({{ $college->university->university_name }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-success w-100">
-                    إضافة
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-
-
-
-<hr>
-
-
-<!-- ================= LEVELS ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-dark text-white fw-bold">
-        📚 المستويات
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-bordered align-middle text-center">
-            <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>اسم المستوى</th>
-                <th>الأقسام المرتبطة</th>
-                <th>تعديل</th>
-                <th>حذف</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            @foreach(\App\Models\Level::with('departments.college.university')->get() as $level)
-                <tr>
-
-                    <form method="POST"
-                          action="{{ route('levels.update', $level->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $level->id }}</td>
-
-                        <td>
-                            <input class="form-control"
-                                   name="level_name"
-                                   value="{{ $level->level_name }}">
-                        </td>
-
-                        <!-- عرض الأقسام كـ Checkboxes -->
-                        <td>
-                            <div class="border rounded p-2 bg-light"
-                                 style="max-height:160px; overflow-y:auto; min-width:300px;">
-
-                                @foreach(\App\Models\Department::with('college.university')->get() as $department)
-
-                                    <div class="form-check text-start mb-1">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="department_ids[]"
-                                               value="{{ $department->id }}"
-                                               id="edit_dep_{{ $level->id }}_{{ $department->id }}"
-                                               @checked($level->departments->contains($department->id))>
-
-                                        <label class="form-check-label small"
-                                               for="edit_dep_{{ $level->id }}_{{ $department->id }}">
-
-                                            <strong>{{ $department->department_name }}</strong>
-                                            <span class="text-muted">
-                                                ({{ $department->college->college_name }}
-                                                - {{ $department->college->university->university_name }})
-                                            </span>
-
-                                        </label>
-
-                                    </div>
-
-                                @endforeach
-
-                            </div>
-                        </td>
-
-                        <td>
-                            <button class="btn btn-sm btn-warning w-100">
-                                تعديل
-                            </button>
-                        </td>
-
-                    </form>
-
-                    <td>
-                        <form method="POST"
-                              action="{{ route('levels.destroy', $level->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger w-100"
-                                    onclick="return confirm('متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
-        <hr>
-
-        <h5>➕ إضافة مستوى</h5>
-
-        <form class="row g-2"
-              method="POST"
-              action="{{ route('levels.store') }}">
-            @csrf
-
-            <div class="col-md-4">
-                <input class="form-control"
-                       name="level_name"
-                       placeholder="اسم المستوى"
-                       required>
-            </div>
-
-          <div class="col-md-6">
-    <label class="form-label fw-bold">اختر الأقسام</label>
-
-    <div class="border rounded p-3 bg-light"
-         style="max-height:220px; overflow-y:auto;">
-
-        @foreach(\App\Models\Department::with('college.university')->get() as $department)
-
-            <div class="form-check mb-2">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="department_ids[]"
-                       value="{{ $department->id }}"
-                       id="dep_{{ $department->id }}">
-
-                <label class="form-check-label"
-                       for="dep_{{ $department->id }}">
-
-                    <strong>{{ $department->department_name }}</strong>
-                    <small class="text-muted">
-                        - {{ $department->college->college_name }}
-                        ({{ $department->college->university->university_name }})
-                    </small>
-
-                </label>
-            </div>
-
-        @endforeach
-
-    </div>
-</div>
-
-            <div class="col-md-2">
-                <button class="btn btn-success w-100">
-                    إضافة
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-<hr>
-
-
-
-<!-- ================= DAYS ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-info text-white fw-bold">
-        📅 الأيام
-    </div>
-
-    <div class="card-body">
-
-        <table class="table table-bordered text-center align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>اسم اليوم</th>
-                <th>تعديل</th>
-                <th>حذف</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            @foreach(\App\Models\Day::all() as $day)
-                <tr>
-                    <form method="POST" action="{{ route('days.update', $day->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <td>{{ $day->id }}</td>
-
-                        <td>
-                            <input class="form-control"
-                                   name="day_name"
-                                   value="{{ $day->day_name }}">
-                        </td>
-
-                        <td>
-                            <button class="btn btn-warning btn-sm">
-                                تعديل
-                            </button>
-                        </td>
-                    </form>
-
-                    <td>
-                        <form method="POST"
-                              action="{{ route('days.destroy', $day->id) }}">
-                            @csrf
-                            @method('DELETE')
-
-                            <button class="btn btn-danger btn-sm"
-                                    onclick="return confirm('متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <hr>
-
-        <h5>➕ إضافة يوم</h5>
-
-        <form class="d-flex gap-2"
-              method="POST"
-              action="{{ route('days.store') }}">
-            @csrf
-
-            <input class="form-control"
-                   name="day_name"
-                   placeholder="اسم اليوم"
-                   required>
-
-            <button class="btn btn-success">
-                إضافة
-            </button>
-        </form>
-
-    </div>
-</div>
-<hr>
-<div class="row g-3">
-
-@foreach(\App\Models\Day::with('students.department')->get() as $day)
-
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-
-            {{-- Header --}}
-            <div class="card-header d-flex justify-content-between align-items-center bg-info text-white">
-                <span class="fw-bold">
-                    📅 {{ $day->day_name }}
-                </span>
-
-                <div class="d-flex gap-1">
-                    <form method="POST" action="{{ route('days.update', $day->id) }}" class="d-inline">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="day_name" value="{{ $day->day_name }}">
-                        <button class="btn btn-warning btn-sm">✏</button>
-                    </form>
-
-                    <form method="POST" action="{{ route('days.destroy', $day->id) }}">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger btn-sm"
-                                onclick="return confirm('متأكد من الحذف؟')">🗑</button>
-                    </form>
-                </div>
-            </div>
-
-            {{-- Body --}}
-            <div class="card-body">
-
-                <h6 class="fw-bold mb-2">👨‍🎓 الطلاب الدوامهم اليوم</h6>
-
-                @if($day->students->count())
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach($day->students as $student)
-                            <span class="badge bg-primary p-2">
-                                {{ $student->name }}
-                                <small class="opacity-75">
-                                    ({{ $student->department->department_name ?? '-' }})
-                                </small>
-                            </span>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="alert alert-secondary py-2 mb-0">
-                        لا يوجد طلاب مسجلين في هذا اليوم
-                    </div>
-                @endif
-
-            </div>
-        </div>
-    </div>
-
-@endforeach
-
-</div>
-
-
-<!-- ================= DRIVERS ================= -->
-<div class="container my-5">
-
-    <h4 class="mb-4 fw-bold text-center">🚍 إدارة السائقين</h4>
-
-    {{-- عرض السائقين --}}
-    @foreach(\App\Models\Driver::with('bus')->get() as $driver)
-
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-
-                <form class="row g-3 align-items-end"
-                      method="POST"
-                      action="{{ route('drivers.update', $driver->id) }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="col-md-3">
-                        <label class="form-label small">اسم السائق</label>
-                        <input class="form-control form-control-sm"
-                               name="name_driver"
-                               value="{{ $driver->name_driver }}">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small">رقم الجوال</label>
-                        <input class="form-control form-control-sm"
-                               name="phone"
-                               value="{{ $driver->phone }}">
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small">الحالة</label>
-                        <select class="form-select form-select-sm" name="state">
-                            <option value="Active" @selected($driver->state=='Active')>نشط</option>
-                            <option value="Inactive" @selected($driver->state=='Inactive')>غير نشط</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small">الباص</label>
-                        <div class="form-control form-control-sm bg-light">
-                            {{ $driver->bus->id ?? 'غير مرتبط' }}
-                        </div>
-                    </div>
-
-                    <div class="col-md-1">
-                        <button class="btn btn-warning btn-sm w-100">
-                            تعديل
-                        </button>
-                    </div>
-                </form>
-
-                {{-- حذف --}}
-                <form method="POST"
-                      action="{{ route('drivers.destroy', $driver->id) }}"
-                      class="mt-2 text-end">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm"
-                            onclick="return confirm('متأكد من حذف السائق؟')">
-                        حذف
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-    @endforeach
-
-    <hr class="my-4">
-
-    {{-- إضافة سائق --}}
-    <div class="card shadow">
-        <div class="card-header bg-success text-white fw-bold">
-            ➕ إضافة سائق جديد
-        </div>
-
-        <div class="card-body">
-            <form class="row g-3" method="POST" action="{{ route('drivers.store') }}">
-                @csrf
-
-                <div class="col-md-4">
-                    <label class="form-label small">اسم السائق</label>
-                    <input class="form-control form-control-sm"
-                           name="name_driver"
-                           placeholder="اسم السائق"
-                           required>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label small">رقم الجوال</label>
-                    <input class="form-control form-control-sm"
-                           name="phone"
-                           placeholder="رقم الجوال">
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label small">الحالة</label>
-                    <select class="form-select form-select-sm" name="state">
-                        <option value="Active">نشط</option>
-                        <option value="Inactive">غير نشط</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-success w-100">
-                        إضافة
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</div>
-
-
-<hr>
-<!-- ================= BUSES ================= -->
-<div class="container my-5">
-
-    <h4 class="mb-4 fw-bold text-center">🚌 إدارة الباصات</h4>
-
-    {{-- عرض الباصات --}}
-    @foreach(\App\Models\Bus::with('driver')->get() as $bus)
-
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-
-                <form class="row g-3 align-items-end"
-                      method="POST"
-                      action="{{ route('buses.update', $bus->id) }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="col-md-3">
-                        <label class="form-label small">عدد الركاب</label>
-                        <input class="form-control form-control-sm"
-                               name="number_passengers"
-                               value="{{ $bus->number_passengers }}">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small">نوع الوقود</label>
-                        <input class="form-control form-control-sm"
-                               name="type_fuel"
-                               value="{{ $bus->type_fuel }}">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label small">السائق</label>
-                        <select class="form-select form-select-sm" name="driver_id">
-                            @foreach(\App\Models\Driver::all() as $driver)
-                                <option value="{{ $driver->id }}"
-                                    @selected($bus->driver_id == $driver->id)>
-                                    {{ $driver->name_driver }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-1">
-                        <button class="btn btn-warning btn-sm w-100">
-                            تعديل
-                        </button>
-                    </div>
-                </form>
-
-                {{-- حذف --}}
-                <form method="POST"
-                      action="{{ route('buses.destroy', $bus->id) }}"
-                      class="mt-2 text-end">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm"
-                            onclick="return confirm('متأكد من حذف الباص؟')">
-                        حذف
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-    @endforeach
-
-    <hr class="my-4">
-
-    {{-- إضافة باص --}}
-    <div class="card shadow">
-        <div class="card-header bg-success text-white fw-bold">
-            ➕ إضافة باص جديد
-        </div>
-
-        <div class="card-body">
-            <form class="row g-3" method="POST" action="{{ route('buses.store') }}">
-                @csrf
-
-                <div class="col-md-4">
-                    <label class="form-label small">عدد الركاب</label>
-                    <input class="form-control form-control-sm"
-                           name="number_passengers"
-                           required>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label small">نوع الوقود</label>
-                    <input class="form-control form-control-sm"
-                           name="type_fuel"
-                           placeholder="ديزل / بنزين / كهرباء">
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label small">السائق</label>
-                    <select class="form-select form-select-sm" name="driver_id" required>
-                        <option value="">اختر السائق</option>
-                        @foreach(\App\Models\Driver::doesntHave('bus')->get() as $driver)
-                            <option value="{{ $driver->id }}">
-                                {{ $driver->name_driver }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-success w-100">
-                        إضافة
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</div>
-
-
-
+        init();
+        animate();
+
+        // --- حركة الروبوت والعيون ---
+        const robot = document.getElementById('robot');
+        const pupils = document.querySelectorAll('.pupil');
+
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.clientX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.clientY) / 25;
+            robot.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`;
+
+            pupils.forEach(p => {
+                const rect = p.parentElement.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width * 100;
+                const y = (e.clientY - rect.top) / rect.height * 100;
+                p.style.left = `${Math.min(Math.max(x, 15), 85)}%`;
+                p.style.top = `${Math.min(Math.max(y, 15), 85)}%`;
+            });
+        });
+
+        // --- تحديث الساعة ---
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
 </body>
-</html> -->
+</html>

@@ -36,7 +36,9 @@ public function getRoles()
                 'username',
                 'role_id',
                 'status',
-                'created_at'
+                'created_at',
+                 'full_name',  
+                     'phone' 
             )
             ->orderBy('id', 'desc')
             ->get();
@@ -53,6 +55,8 @@ public function store(Request $request)
         'password' => Hash::make($request->password),
         'role_id'  => $request->role_id,
         'status'   => 'pending',
+        'full_name' => $request->full_name, 
+        'phone'     => $request->phone, 
     ]);
 
    
@@ -63,6 +67,8 @@ public function store(Request $request)
             'username' => $user->username,
             'role_id'  => $user->role_id,
             'status'   => $user->status,
+            'full_name' => $user->full_name, 
+        'phone'     => $user->phone,
      
     ], 201);}
 

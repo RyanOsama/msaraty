@@ -28,8 +28,7 @@ public function index()
 
         return [
             'id' => $student->id,
-            'name' => $student->name,
-            'phone' => $student->phone,
+            
             'university_number' => $student->university_number,
             'city' => $student->city,
 
@@ -79,8 +78,7 @@ public function show($id)
 
     return response()->json([
         'id' => $student->id,
-        'name' => $student->name,
-        'phone' => $student->phone,
+       
         'university_number' => $student->university_number,
         'city' => $student->city,
 
@@ -122,9 +120,7 @@ public function show($id)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'name' => 'required',
             'university_number' => 'required|unique:students',
-            'phone' => 'nullable',
             'city' => 'nullable',
             'gender' => 'nullable',
             'state' => 'nullable',
@@ -140,8 +136,7 @@ public function show($id)
         ]);
 
         $student = Student::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
+           
             'university_number' => $request->university_number,
             'city' => $request->city,
             'gender' => $request->gender,
@@ -180,9 +175,7 @@ public function show($id)
 
     $request->validate([
         'user_id' => 'sometimes|exists:users,id',
-        'name' => 'sometimes',
         'university_number' => 'sometimes|unique:students,university_number,' . $id,
-        'phone' => 'nullable',
         'city' => 'nullable',
         'gender' => 'nullable',
         'state' => 'nullable',
@@ -200,8 +193,7 @@ public function show($id)
     ]);
 
     $student->update([
-        'name' => $request->name ?? $student->name,
-        'phone' => $request->phone ?? $student->phone,
+       
         'university_number' => $request->university_number ?? $student->university_number,
         'city' => $request->city ?? $student->city,
         'gender' => $request->gender ?? $student->gender,

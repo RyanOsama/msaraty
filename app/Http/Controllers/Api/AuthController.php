@@ -28,17 +28,11 @@ class AuthController extends Controller
         'password' => Hash::make($request->password),
         'role_id'  => $request->role_id,
         'status'   => 'pending',
+          'full_name' => $request->full_name, 
+        'phone'     => $request->phone,     
     ]);
 
-    // return response()->json([
-    //     'message' => 'تم إنشاء الحساب بنجاح',
-    //     'data' => [
-    //         'id'       => $user->id,
-    //         'username' => $user->username,
-    //         'role_id'  => $user->role_id,
-    //         'status'   => $user->status,
-    //     ],
-    // ], 201);
+ 
 
      return response()->json([
        
@@ -46,6 +40,8 @@ class AuthController extends Controller
             'username' => $user->username,
             'role_id'  => $user->role_id,
             'status'   => $user->status,
+            'full_name' => $user->full_name, 
+            'phone'     => $user->phone,
      
     ], 201);
 }
@@ -69,23 +65,15 @@ public function login(loginRequest $request)
             'id'       => $user->id,
             'username' => $user->username,
             'role_id'  => $user->role_id,
+            'full_name' => $user->full_name, 
+            'phone'     => $user->phone,
         
                  
             ],
         ], 200);
         
 
-        // عند اسامه
-
-        //     return response()->json([
-       
-          
-        //         'username' => $user->username,
-        //         'role_id'  => $user->role_id,
-        //              'status' => $user->status, // pending | approved
-           
-        // ], 200);
-
+     
         
     }
     

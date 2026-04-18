@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     protected $fillable = [
-        'name',
-        'phone',
         'university_number',
         'city',
         'gender',
