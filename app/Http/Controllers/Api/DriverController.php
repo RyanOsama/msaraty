@@ -20,15 +20,11 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name_driver' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20'],
             'state' => ['required', 'string', 'max:50'],
             'user_id' => ['required', 'integer'],
         ]);
 
         $driver = Driver::create([
-            'name_driver' => $request->name_driver,
-            'phone' => $request->phone,
             'state' => $request->state,
             'user_id' => $request->user_id,
         ]);
@@ -40,15 +36,13 @@ class DriverController extends Controller
    public function update(Request $request, Driver $driver)
 {
     $request->validate([
-        'name_driver' => ['sometimes', 'string', 'max:255'],
-        'phone' => ['sometimes', 'string', 'max:20'],
+        
         'state' => ['sometimes', 'string', 'max:50'],
         'user_id' => ['sometimes', 'integer'],
     ]);
 
     $driver->update($request->only([
-        'name_driver',
-        'phone',
+   
         'state',
         'user_id'
     ]));
