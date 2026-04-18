@@ -65,8 +65,7 @@ public function login(loginRequest $request)
             'id'       => $user->id,
             'username' => $user->username,
             'role_id'  => $user->role_id,
-            'full_name' => $user->full_name, 
-            'phone'     => $user->phone,
+            
         
                  
             ],
