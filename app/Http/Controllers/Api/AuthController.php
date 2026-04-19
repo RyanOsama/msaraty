@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\LoginRequest;
+use App\Models\ActivityLog; 
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -32,7 +33,13 @@ class AuthController extends Controller
         'phone'     => $request->phone,     
     ]);
 
- 
+ ActivityLog::create([
+    'user_id' => $user->id,
+    'action' => 'انشاء  مستخدم',
+    'table_name' => 'users',
+    'record_id' => $user->id,
+    'description' => 'User registered',
+]);
 
      return response()->json([
        
@@ -56,8 +63,15 @@ public function login(loginRequest $request)
             'message' => 'بيانات الدخول غير صحيحة'
         ], 401);
     }
+        $user = Auth::user();
 
-    $user = Auth::user();
+ ActivityLog::create([
+        'user_id' => $user->id,
+        'action' => 'عمليه تسجيل دخول',
+        'table_name' => 'users',
+        'record_id' => $user->id,
+        'description' => 'User logged in',
+    ]);
      //ينفع عند صابر
         return response()->json([
             'status' => $user->status,
@@ -65,6 +79,8 @@ public function login(loginRequest $request)
             'id'       => $user->id,
             'username' => $user->username,
             'role_id'  => $user->role_id,
+            'full_name' => $user->full_name,
+            'phone'     => $user->phone,
             
         
                  

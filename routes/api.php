@@ -218,3 +218,9 @@ Route::post('/trip-cancellations', [TripCancellationController::class, 'store'])
 Route::post('/trip-cancellations-check', [TripCancellationController::class, 'check']);
 Route::delete('/trip-cancellations/{id}', [TripCancellationController::class, 'destroy']);
 Route::post('/trip-cancellations-update-status', [TripCancellationController::class, 'updateStatus']);
+
+
+use App\Http\Controllers\Api\ActivityLogController;
+Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+Route::post('/activity-logs', [ActivityLogController::class, 'store']);
+Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy']);
