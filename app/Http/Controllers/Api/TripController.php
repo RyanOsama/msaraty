@@ -136,7 +136,11 @@ public function checkStudentTripByDate(Request $request)
         'date' => 'required|date',
     ]);
 
-    $trip = Trip::with(['driver', 'bus']) 
+    $trip = Trip::with([
+            'driver.user',   // 🔥 مهم عشان اسم السائق
+            'bus',
+            'assign.route'
+        ])
         ->whereDate('trip_date', $request->date)
         ->whereHas('students', function ($q) use ($request) {
             $q->where('student_id', $request->student_id);
@@ -145,30 +149,33 @@ public function checkStudentTripByDate(Request $request)
 
     if (!$trip) {
         return response()->json([
+            'status' => false,
             'message' => 'الطالب غير مسجل في أي رحلة بهذا التاريخ',
         ]);
     }
 
+    return response()->json([
+        'status' => true,
 
-return response()->json([
-    'id' => $trip->id,
-    'trip_name' => $trip->trip_name,
-    'trip_type' => $trip->trip_type,
-    'trip_date' => $trip->trip_date,
-    'trip_time' => $trip->trip_time,
+        'data' => [
+            'id' => $trip->id,
+            'trip_name' => $trip->trip_name,
+            'trip_type' => $trip->trip_type,
+            'trip_date' => $trip->trip_date,
+            'trip_time' => $trip->trip_time,
 
-   
-    'route_name' => $trip->assign->route->route_name ?? null,
+            // 🛣️ المسار
+            'route_name' => optional($trip->assign->route)->route_name,
 
-   
-    'driver_name' => $trip->driver->name_driver ?? null,
-    'driver_phone' => $trip->driver->phone ?? null,
+            // 👨‍✈️ السائق (من جدول users)
+            'driver_name' => optional($trip->driver->user)->full_name,
+            'driver_phone' => optional($trip->driver->user)->phone,
 
-   
-    'bus_number_passengers' => $trip->bus->number_passengers ?? null,
-]);
+            // 🚌 الباص
+            'bus_number_passengers' => optional($trip->bus)->number_passengers,
+        ]
+    ]);
 }
-
 public function updateStudentStatus(Request $request)
 {
     $request->validate([
