@@ -9,12 +9,27 @@ use Illuminate\Http\Request;
 class DriverController extends Controller
 {
     // عرض جميع السائقين
-    public function index()
-    {
-        $drivers = Driver::all();
+  public function index()
+{
+    $drivers = Driver::with('user')->get();
 
-        return response()->json($drivers, 200);
-    }
+    $result = $drivers->map(function ($driver) {
+        return [
+            'id' => $driver->id,
+
+            'name_driver' => $driver->user->full_name ?? null, // 👈 من users
+            'phone' => $driver->user->phone ?? null,
+
+            'state' => $driver->state,
+            'user_id' => $driver->user_id,
+
+            'created_at' => $driver->created_at,
+            'updated_at' => $driver->updated_at,
+        ];
+    });
+
+    return response()->json($result, 200);
+}
 
     // إضافة سائق
     public function store(Request $request)

@@ -14,6 +14,8 @@ class StudentController extends Controller
 public function index()
 {
     $students = Student::with([
+            'user', // 👈 هذا المهم
+
         'university',
         'college',
         'department',
@@ -28,7 +30,8 @@ public function index()
 
         return [
             'id' => $student->id,
-            
+                  'name' => $student->user->full_name ?? null, // 👈 بدل full_name
+        'phone' => $student->user->phone ?? null,    // 👈 رقم الجوال
             'university_number' => $student->university_number,
             'city' => $student->city,
 
