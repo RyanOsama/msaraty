@@ -202,6 +202,8 @@ Route::post('/absence-requests', [AbsenceRequestController::class, 'store']);
 // عرض كل الغيابات
 Route::get('/absence-requests', [AbsenceRequestController::class, 'index']);
 
+
+
 use App\Http\Controllers\Api\TripController;
 
 Route::get('trips', [TripController::class, 'index']);
@@ -211,13 +213,9 @@ Route::delete('trips/{id}', [TripController::class, 'destroy']);
 Route::post('/student-trip-by-date', [TripController::class, 'checkStudentTripByDate']);
 
 
-use App\Http\Controllers\Api\TripCancellationController;
+Route::post('/trip/update-student-status', [TripController::class, 'updateStudentStatus']);
 
-Route::get('/trip-cancellations', [TripCancellationController::class, 'index']);
-Route::post('/trip-cancellations', [TripCancellationController::class, 'store']);
-Route::post('/trip-cancellations-check', [TripCancellationController::class, 'check']);
-Route::delete('/trip-cancellations/{id}', [TripCancellationController::class, 'destroy']);
-Route::post('/trip-cancellations-update-status', [TripCancellationController::class, 'updateStatus']);
+
 
 
 use App\Http\Controllers\Api\ActivityLogController;

@@ -61,7 +61,8 @@ public function store(Request $request)
    $students = [];
 
 foreach ($request->student_ids ?? [] as $studentId) {
-    $students[$studentId] = ['status' => 'approved']; // 🔥 هنا التغيير
+   $students[$studentId] = ['status' => 'assigned'];
+
 }
 
 $trip->students()->attach($students);
@@ -166,5 +167,34 @@ return response()->json([
    
     'bus_number_passengers' => $trip->bus->number_passengers ?? null,
 ]);
+}
+
+public function updateStudentStatus(Request $request)
+{
+    $request->validate([
+        'trip_id' => 'required|exists:trips,id',
+        'student_id' => 'required|exists:students,id',
+        'status' => 'required|in:assigned,present,absent,excused',
+    ]);
+
+    $trip = Trip::findOrFail($request->trip_id);
+
+    // التأكد أن الطالب مرتبط بالرحلة
+    if (!$trip->students()->where('student_id', $request->student_id)->exists()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Student not assigned to this trip'
+        ], 404);
+    }
+
+    // تحديث الحالة في pivot
+    $trip->students()->updateExistingPivot($request->student_id, [
+        'status' => $request->status
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Student status updated successfully'
+    ]);
 }
 }

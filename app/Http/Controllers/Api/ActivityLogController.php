@@ -22,6 +22,7 @@ class ActivityLogController extends Controller
 
             'user_id' => $log->user->id ?? null,
             'username' => $log->user->username ?? null,
+            
 
             'created_at' => $log->created_at,
         ];
