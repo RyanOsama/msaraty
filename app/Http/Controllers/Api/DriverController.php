@@ -47,24 +47,41 @@ class DriverController extends Controller
         return response()->json($driver, 201);
     }
 
-    // تعديل سائق
    public function update(Request $request, Driver $driver)
 {
     $request->validate([
-        
         'state' => ['sometimes', 'string', 'max:50'],
         'user_id' => ['sometimes', 'integer'],
+        'name_driver' => ['sometimes', 'string'],
+        'phone' => ['sometimes', 'string'],
     ]);
 
+    // ✅ تحديث بيانات driver
     $driver->update($request->only([
-   
         'state',
         'user_id'
     ]));
 
+    // ✅ تحديث بيانات user (الاسم + الجوال)
+    if ($driver->user) {
+        $driver->user->update([
+            'full_name' => $request->name_driver ?? $driver->user->full_name,
+            'phone' => $request->phone ?? $driver->user->phone,
+        ]);
+    }
+
+    // تحميل العلاقة
+    $driver->load('user');
+
     return response()->json([
         'message' => 'تم تعديل السائق بنجاح',
-        'driver' => $driver,
+        'driver' => [
+            'id' => $driver->id,
+            'name_driver' => $driver->user->full_name ?? null,
+            'phone' => $driver->user->phone ?? null,
+            'state' => $driver->state,
+            'user_id' => $driver->user_id,
+        ]
     ]);
 }
 
