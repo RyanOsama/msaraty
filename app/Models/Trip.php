@@ -19,9 +19,11 @@ class Trip extends Model
         'created_by',
     ];
 
-   public function students()
+public function students()
 {
-    return $this->belongsToMany(Student::class, 'trip_student');
+    return $this->belongsToMany(Student::class, 'trip_student')
+        ->withPivot('status')
+        ->withTimestamps();
 }
 public function driver()
 {
@@ -40,4 +42,5 @@ public function cancellations()
 {
     return $this->hasMany(TripCancellation::class);
 }
+
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Trip; // 🔥 هذا المهم
+use App\Models\TripStudent;
 
 class TripController extends Controller
 {
@@ -204,4 +205,21 @@ public function updateStudentStatus(Request $request)
         'message' => 'Student status updated successfully'
     ]);
 }
+
+public function trip_students()
+{
+    $data = TripStudent::select(
+        'id',
+        'trip_id',
+        'student_id',
+        'status',
+        'created_at'
+    )->get();
+
+    return response()->json($data, 200);
+}
+
+
+
+
 }
