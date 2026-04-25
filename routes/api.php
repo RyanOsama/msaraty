@@ -214,7 +214,7 @@ Route::post('/student-trip-by-date', [TripController::class, 'checkStudentTripBy
 Route::get('/trip-students', [TripController::class, 'trip_students']);
 
 Route::post('/trip/update-student-status', [TripController::class, 'updateStudentStatus']);
-
+Route::post('/driver-trip-by-date', [TripController::class, 'checkDriverTripByDate']);
 
 
 

@@ -21,7 +21,7 @@ class TripController extends Controller
             'trip_date' => $trip->trip_date,
             'trip_time' => $trip->trip_time,
             'deadline' => $trip->deadline,
-
+             'status' => $trip->status,
             'assign_id' => $trip->assign_id,
             'bus_id' => $trip->bus_id,
             'driver_id' => $trip->driver_id,
@@ -221,5 +221,63 @@ public function trip_students()
 
 
 
+
+public function checkDriverTripByDate(Request $request)
+{
+    $request->validate([
+        'driver_id' => 'required|exists:drivers,id',
+        'date' => 'required|date',
+    ]);
+
+    $trip = Trip::with([
+            'students.user',
+            'bus',
+            'assign.route.stations' // 🔥 المحطات
+        ])
+        ->whereDate('trip_date', $request->date)
+        ->where('driver_id', $request->driver_id)
+        ->first();
+
+    if (!$trip) {
+        return response()->json([
+            'status' => false,
+            'message' => 'لا توجد رحلة لهذا السائق في هذا التاريخ',
+        ]);
+    }
+
+    return response()->json([
+
+        
+            'id' => $trip->id,
+            'trip_name' => $trip->trip_name,
+            'trip_type' => $trip->trip_type,
+            'trip_date' => $trip->trip_date,
+            'trip_time' => $trip->trip_time,
+            'status' => $trip->status,
+
+            // 🛣️ المسار
+            'route_name' => optional($trip->assign->route)->route_name,
+
+            // 🚌 الباص
+
+            // 🚏 المحطات
+            'stations' => optional($trip->assign->route)->stations?->map(function ($station) {
+                return [
+                    'id' => $station->id,
+                    'station_name' => $station->station_name,
+                ];
+            }),
+
+            // 👨‍🎓 الطلاب
+            'students' => $trip->students->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'name' => optional($student->user)->full_name,
+                    'phone' => optional($student->user)->phone,
+                ];
+            }),
+        
+    ]);
+}
 
 }

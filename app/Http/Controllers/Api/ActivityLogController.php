@@ -16,7 +16,6 @@ class ActivityLogController extends Controller
         return [
             'id' => $log->id,
             'action' => $log->action,
-            'table_name' => $log->table_name,
             'record_id' => $log->record_id,
             'description' => $log->description,
 
@@ -40,7 +39,6 @@ class ActivityLogController extends Controller
         $log = ActivityLog::create([
             'user_id'    => auth()->id(),
             'action'     => $request->action,
-            'table_name' => $request->table_name,
             'record_id'  => $request->record_id,
             'description'=> $request->description,
         ]);

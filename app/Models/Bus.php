@@ -10,6 +10,7 @@ class Bus extends Model
     use HasFactory;
      protected $fillable = [
         'number_passengers',
+        'name',
         'type_fuel',
         'driver_id',
     ];

@@ -20,12 +20,16 @@ class BusController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+                    'name' => ['required', 'string', 'max:255'], // ✅ اسم الباص
+
             'number_passengers' => ['required', 'integer'],
             'type_fuel' => ['required', 'string', 'max:50'],
             'driver_id' => ['required', 'integer'],
         ]);
 
         $bus = Bus::create([
+                    'name' => $request->name, // ✅ أضف هذا السطر
+
             'number_passengers' => $request->number_passengers,
             'type_fuel' => $request->type_fuel,
             'driver_id' => $request->driver_id,
@@ -38,12 +42,16 @@ class BusController extends Controller
   public function update(Request $request, Bus $bus)
 {
     $request->validate([
+                'name' => ['sometimes', 'string', 'max:255'], // ✅ اسم الباص
+
         'number_passengers' => ['sometimes', 'integer'],
         'type_fuel' => ['sometimes', 'string', 'max:50'],
         'driver_id' => ['sometimes', 'integer'],
     ]);
 
     $bus->update($request->only([
+                'name', // ✅ أضف هذا
+
         'number_passengers',
         'type_fuel',
         'driver_id'

@@ -35,10 +35,9 @@ class AuthController extends Controller
 
  ActivityLog::create([
     'user_id' => $user->id,
-    'action' => 'انشاء  مستخدم',
-    'table_name' => 'users',
+    'action' => 'add_user ',
     'record_id' => $user->id,
-    'description' => 'User registered',
+    'description' => 'تم انشاء مستخدم جديد',
 ]);
 
      return response()->json([
@@ -65,13 +64,12 @@ public function login(loginRequest $request)
     }
         $user = Auth::user();
 
- ActivityLog::create([
-        'user_id' => $user->id,
-        'action' => 'عمليه تسجيل دخول',
-        'table_name' => 'users',
-        'record_id' => $user->id,
-        'description' => 'User logged in',
-    ]);
+//  ActivityLog::create([
+//         'user_id' => $user->id,
+//         'action' => 'عمليه تسجيل دخول',
+//         'record_id' => $user->id,
+//         'description' => 'User logged in',
+//     ]);
      //ينفع عند صابر
         return response()->json([
             'status' => $user->status,
