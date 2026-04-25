@@ -222,3 +222,8 @@ use App\Http\Controllers\Api\ActivityLogController;
 Route::get('/activity-logs', [ActivityLogController::class, 'index']);
 Route::post('/activity-logs', [ActivityLogController::class, 'store']);
 Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy']);
+
+use App\Http\Controllers\Api\StudentPaymentController;
+Route::post('/student-payments', [StudentPaymentController::class, 'store']);
+Route::get('/show-student-payments', [StudentPaymentController::class, 'getAllPayments']);
+Route::post('/student-payments-by-student', [StudentPaymentController::class, 'getStudentPayments']);
