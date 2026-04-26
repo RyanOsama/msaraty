@@ -8,32 +8,47 @@ use App\Models\StudentPayment;
 
 class StudentPaymentController extends Controller
 {
-    public function store(Request $request)
-    {
-        $request->validate([
-            'receipt_image' => ['required', 'image'],
-            'bank_name' => ['required', 'string'],
-            'receipt_number' => ['required', 'string'],
-            'amount' => ['required', 'numeric'],
-            'student_id' => ['required', 'exists:students,id'],
-            'for_month' => ['required', 'string'],
-        ]);
+  public function store(Request $request)
+{
+    $request->validate([
+        'receipt_image' => ['required', 'image'],
+        'bank_name' => ['required', 'string'],
+        'receipt_number' => ['required', 'string'],
+        'amount' => ['required', 'numeric'],
+        'student_id' => ['required', 'exists:students,id'],
+        'for_month' => ['required', 'string'],
+    ]);
 
-        $path = $request->file('receipt_image')->store('payments', 'public');
+    $file = $request->file('receipt_image');
+    $filename = time() . '_' . $file->getClientOriginalName();
 
-        $payment = StudentPayment::create([
-            'receipt_image' => $path,
-            'bank_name' => $request->bank_name,
-            'receipt_number' => $request->receipt_number,
-            'amount' => $request->amount,
-            'student_id' => $request->student_id,
-            'for_month' => $request->for_month,
-            'status' => 'pending',
-        ]);
-
-        return response()->json($payment, 201);
+    // 👇 تأكد المجلد موجود
+    $destination = public_path('uploads/payments');
+    if (!file_exists($destination)) {
+        mkdir($destination, 0755, true);
     }
 
+    // 👇 حفظ داخل public
+    $file->move($destination, $filename);
+
+    // 👇 المسار اللي ينحفظ في DB
+    $path = 'uploads/payments/' . $filename;
+
+    $payment = StudentPayment::create([
+        'receipt_image' => $path,
+        'bank_name' => $request->bank_name,
+        'receipt_number' => $request->receipt_number,
+        'amount' => $request->amount,
+        'student_id' => $request->student_id,
+        'for_month' => $request->for_month,
+        'status' => 'pending',
+    ]);
+
+    return response()->json([
+        ...$payment->toArray(),
+        'receipt_image' => asset($path) // رابط كامل
+    ], 201);
+}
 
 public function getStudentPayments(Request $request)
 {

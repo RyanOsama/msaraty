@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
+
 
 class StudentController extends Controller
 {
@@ -153,6 +155,12 @@ public function show($id)
 'dropoff_station_id' => $request->dropoff_station_id,
 
         ]);
+        ActivityLog::create([
+'user_id' => $request->user_id,
+    'action' => 'create_student',
+    'record_id' => $student->id,
+    'description' => 'تم إنشاء طالب جديد',
+]);
 
 
         // ربط الأيام
@@ -172,7 +180,7 @@ public function show($id)
     }
 
     // تحديث طالب
-  public function update(Request $request, $id)
+ public function update(Request $request, $id)
 {
     $student = Student::findOrFail($id);
 
@@ -193,10 +201,14 @@ public function show($id)
 
         'pickup_station_id' => 'nullable|exists:stations,id',
         'dropoff_station_id' => 'nullable|exists:stations,id',
+
+        // 🔥 بيانات اليوزر
+        'full_name' => 'sometimes|string',
+        'phone' => 'sometimes|string',
     ]);
 
+    // ✅ تحديث بيانات الطالب
     $student->update([
-       
         'university_number' => $request->university_number ?? $student->university_number,
         'city' => $request->city ?? $student->city,
         'gender' => $request->gender ?? $student->gender,
@@ -209,6 +221,19 @@ public function show($id)
         'pickup_station_id' => $request->pickup_station_id ?? $student->pickup_station_id,
         'dropoff_station_id' => $request->dropoff_station_id ?? $student->dropoff_station_id,
     ]);
+ActivityLog::create([
+'user_id' => $request->user_id,
+    'action' => 'update_student',
+    'record_id' => $student->id,
+    'description' => 'تم تعديل بيانات الطالب',
+]);
+    // 🔥 تحديث بيانات user المرتبط
+    if ($student->user) {
+        $student->user->update([
+            'full_name' => $request->full_name ?? $student->user->full_name,
+            'phone' => $request->phone ?? $student->user->phone,
+        ]);
+    }
 
     // تحديث الأيام إذا تم إرسالها
     if ($request->has('days')) {
@@ -218,13 +243,13 @@ public function show($id)
     return response()->json([
         'status' => true,
         'message' => 'Student updated successfully',
-        'data' => $student->load([
-            'university',
-            'college',
-            'department',
-            'level',
-            'days'
-        ])
+        'data' => [
+            'id' => $student->id,
+            'full_name' => optional($student->user)->full_name, // 🔥
+            'phone' => optional($student->user)->phone,         // 🔥
+            'state' => $student->state,
+            'university_number' => $student->university_number,
+        ]
     ]);
 }
 
@@ -242,6 +267,12 @@ public function show($id)
 
         $student->delete();
 
+ ActivityLog::create([
+        'user_id' => $request->user_id,
+        'action' => 'delete_student',
+        'record_id' => $student->id,
+        'description' => 'تم حذف الطالب',
+    ]);
         return response()->json([
             'status' => true,
             'message' => 'Student deleted successfully'
