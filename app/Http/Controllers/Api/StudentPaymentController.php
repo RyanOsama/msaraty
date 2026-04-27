@@ -8,7 +8,7 @@ use App\Models\StudentPayment;
 
 class StudentPaymentController extends Controller
 {
-  public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'receipt_image' => ['required', 'image'],
@@ -19,20 +19,8 @@ class StudentPaymentController extends Controller
         'for_month' => ['required', 'string'],
     ]);
 
-    $file = $request->file('receipt_image');
-    $filename = time() . '_' . $file->getClientOriginalName();
-
-    // 👇 تأكد المجلد موجود
-    $destination = public_path('uploads/payments');
-    if (!file_exists($destination)) {
-        mkdir($destination, 0755, true);
-    }
-
-    // 👇 حفظ داخل public
-    $file->move($destination, $filename);
-
-    // 👇 المسار اللي ينحفظ في DB
-    $path = 'uploads/payments/' . $filename;
+    // 🔥 هذا هو الحل الصحيح (Laravel way)
+    $path = $request->file('receipt_image')->store('payments', 'public');
 
     $payment = StudentPayment::create([
         'receipt_image' => $path,
@@ -46,10 +34,9 @@ class StudentPaymentController extends Controller
 
     return response()->json([
         ...$payment->toArray(),
-        'receipt_image' => asset($path) // رابط كامل
+        'receipt_image' => asset('storage/' . $path)
     ], 201);
 }
-
 public function getStudentPayments(Request $request)
 {
     $request->validate([
