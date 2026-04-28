@@ -278,4 +278,24 @@ ActivityLog::create([
             'message' => 'Student deleted successfully'
         ], 200);
     }
+
+
+
+public function getStudentTrips(Request $request)
+{
+    $request->validate([
+        'student_id' => 'required|exists:students,id'
+    ]);
+
+    $student = Student::with('trips')->find($request->student_id);
+
+    $data = $student->trips->map(function ($trip) {
+        return [
+            'status' => $trip->pivot->status,
+            'trip_date' => $trip->trip_date, // 👈 الصح
+        ];
+    });
+
+    return response()->json($data);
+}
 }

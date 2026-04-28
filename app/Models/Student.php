@@ -65,6 +65,8 @@ public function absenceRequests()
 }
 public function trips()
 {
-    return $this->belongsToMany(Trip::class, 'trip_student');
+    return $this->belongsToMany(\App\Models\Trip::class, 'trip_student')
+        ->withPivot('status')
+        ->withTimestamps(); // 👈 مهم جدًا
 }
 }

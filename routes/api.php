@@ -152,7 +152,7 @@ Route::get('/students/{id}', [StudentController::class, 'show']);
 Route::post('students', [StudentController::class, 'store']);
 Route::patch('students/{id}', [StudentController::class, 'update']);
 Route::delete('students/{id}', [StudentController::class, 'destroy']);
-
+Route::post('/student-trips', [StudentController::class, 'getStudentTrips']);
 
 
 
@@ -176,7 +176,7 @@ Route::delete('/buses/{bus}', [BusController::class, 'destroy']);
 use App\Http\Controllers\Api\NotificationController;
 
 Route::get('notifications', [NotificationController::class, 'index']);
-Route::post('notifications', [NotificationController::class, 'store']);
+Route::post('/send-notification', [NotificationController::class, 'send']);
 Route::patch('notifications/{notification}', [NotificationController::class, 'update']);
 Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
 
