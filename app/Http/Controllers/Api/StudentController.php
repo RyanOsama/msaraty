@@ -203,6 +203,7 @@ public function show($id)
         'dropoff_station_id' => 'nullable|exists:stations,id',
 
         // 🔥 بيانات اليوزر
+        'username' => 'sometimes|string|unique:users,username,' . $student->user_id,
         'full_name' => 'sometimes|string',
         'phone' => 'sometimes|string',
     ]);
@@ -232,6 +233,8 @@ ActivityLog::create([
         $student->user->update([
             'full_name' => $request->full_name ?? $student->user->full_name,
             'phone' => $request->phone ?? $student->user->phone,
+                'username' => $request->username ?? $student->user->username,
+
         ]);
     }
 
@@ -240,17 +243,39 @@ ActivityLog::create([
         $student->days()->sync($request->days);
     }
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Student updated successfully',
-        'data' => [
-            'id' => $student->id,
-            'full_name' => optional($student->user)->full_name, // 🔥
-            'phone' => optional($student->user)->phone,         // 🔥
-            'state' => $student->state,
-            'university_number' => $student->university_number,
-        ]
-    ]);
+  return response()->json([
+    'message' => 'Student updated successfully',
+
+    'student' => [
+        'id' => $student->id,
+        'university_number' => $student->university_number,
+        'city' => $student->city,
+
+        'gender' => in_array($student->gender, ['رجل', 'ذكر']) ? 'ذكر' : 'أنثى',
+
+        'state' => strtolower($student->state) === 'active' ? 'active' : 'inactive',
+
+        'user_id' => $student->user_id,
+        'university_id' => $student->university_id,
+        'college_id' => $student->college_id,
+        'department_id' => $student->department_id,
+        'level_id' => $student->level_id,
+
+        'pickup_station_id' => $student->pickup_station_id,
+        'dropoff_station_id' => $student->dropoff_station_id,
+
+        'days' => $student->days->pluck('id')->toArray(),
+
+     
+    ],
+
+    'user' => [
+        'id' => optional($student->user)->id,
+        'full_name' => optional($student->user)->full_name,
+        'phone' => optional($student->user)->phone,
+        'username' => optional($student->user)->username,
+    ]
+]);
 }
 
     // حذف طالب
