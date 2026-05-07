@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
-
 class NotificationController extends Controller
 {
     // عرض جميع الاشعارات
@@ -76,41 +75,47 @@ class NotificationController extends Controller
             'message' => 'تم حذف الاشعار بنجاح',
         ]);
     }
+
+
 public function send(Request $request)
 {
-    // 1. التحقق من البيانات
+    // التحقق من البيانات
     $request->validate([
         'title' => 'required|string|max:255',
         'message' => 'required|string',
         'type' => 'required|string|max:50',
         'target_group' => 'required|integer',
-        'sender_id' => 'nullable|integer', // ✅ اختياري
+        'sender_id' => 'nullable|integer',
     ]);
 
     $title = $request->title;
-    $body = $request->message;
+    $body  = $request->message;
 
-    // 2. تحديد التوبك حسب الفئة
+    // تحديد التوبك
     switch ($request->target_group) {
         case 1:
             $topic = 'student';
             break;
+
         case 2:
             $topic = 'driver';
             break;
+
         case 3:
             $topic = 'admin';
             break;
+
         case 4:
             $topic = 'all';
             break;
+
         default:
             $topic = 'student';
     }
 
-    // 3. حفظ في DB (السندر إذا ما جاء = null)
+    // حفظ الإشعار في قاعدة البيانات
     $notification = Notification::create([
-        'sender_id' => $request->sender_id ?? null, // ✅ هذا المهم
+        'sender_id' => $request->sender_id ?? null,
         'title' => $title,
         'message' => $body,
         'type' => $request->type,
@@ -118,17 +123,23 @@ public function send(Request $request)
     ]);
 
     try {
+
+        // الوصول إلى Firebase Messaging
         $messaging = app('firebase.messaging');
 
+        // إنشاء الرسالة بنفس طريقة الراوت
         $message = CloudMessage::new()
             ->withTarget('topic', $topic)
-            ->withNotification(FirebaseNotification::create($title, $body))
+            ->withNotification(
+                FirebaseNotification::create($title, $body)
+            )
             ->withData([
                 'type' => $request->type,
-                'id' => (string)$notification->id,
                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                'id' => (string)$notification->id,
             ]);
 
+        // إرسال الإشعار
         $messaging->send($message);
 
         return response()->json([
@@ -137,6 +148,7 @@ public function send(Request $request)
         ]);
 
     } catch (\Exception $e) {
+
         return response()->json([
             'error' => 'تم الحفظ لكن فشل الإرسال: ' . $e->getMessage()
         ], 500);
