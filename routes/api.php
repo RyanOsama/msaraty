@@ -154,7 +154,7 @@ Route::patch('students/{id}', [StudentController::class, 'update']);
 Route::delete('students/{id}', [StudentController::class, 'destroy']);
 Route::post('/student-trips', [StudentController::class, 'getStudentTrips']);
 
-
+//
 
 
 
