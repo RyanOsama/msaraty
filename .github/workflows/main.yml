@@ -18,3 +18,5 @@ jobs:
           cat <<EOF > storage/firebase/service-account.json
           ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           EOF
+          echo "Checking file..."
+          ls -la storage/firebase
