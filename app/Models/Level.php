@@ -8,7 +8,6 @@ class Level extends Model
 {
     protected $fillable = [
         'level_name',
-        'department_id'
     ];
 
     public function students()

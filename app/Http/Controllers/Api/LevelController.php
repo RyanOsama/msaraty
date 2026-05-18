@@ -45,19 +45,15 @@ public function index()
     }
 
     // إنشاء مستوى
-   public function store(Request $request)
+  public function store(Request $request)
 {
     $request->validate([
         'level_name' => 'required',
-        'department_id' => 'required|exists:departments,id'
     ]);
 
     $level = Level::create([
         'level_name' => $request->level_name
     ]);
-
-    // ربط القسم بالمستوى
-    $level->departments()->attach($request->department_id);
 
     return response()->json([
         'status' => true,
@@ -65,38 +61,32 @@ public function index()
         'data' => $level
     ], 201);
 }
-
     // تحديث مستوى
-    public function update(Request $request, $id)
-    {
-        $level = Level::find($id);
+  public function update(Request $request, $id)
+{
+    $level = Level::find($id);
 
-        if (!$level) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Level not found'
-            ], 404);
-        }
-
-        $request->validate([
-            'level_name' => 'required',
-            'department_ids' => 'required|array',
-            'department_ids.*' => 'exists:departments,id'
-        ]);
-
-        $level->update([
-            'level_name' => $request->level_name
-        ]);
-
-        $level->departments()->sync($request->department_ids);
-
+    if (!$level) {
         return response()->json([
-            'status' => true,
-            'message' => 'Level updated successfully',
-            'data' => $level->load('departments')
-        ], 200);
+            'status' => false,
+            'message' => 'Level not found'
+        ], 404);
     }
 
+    $request->validate([
+        'level_name' => 'required',
+    ]);
+
+    $level->update([
+        'level_name' => $request->level_name
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Level updated successfully',
+        'data' => $level
+    ], 200);
+}
     // حذف مستوى
 
 public function destroy($id)
