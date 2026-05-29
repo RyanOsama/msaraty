@@ -224,6 +224,17 @@ Route::post('/activity-logs', [ActivityLogController::class, 'store']);
 Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy']);
 
 use App\Http\Controllers\Api\StudentPaymentController;
-Route::post('/student-payments', [StudentPaymentController::class, 'store']);
-Route::get('/show-student-payments', [StudentPaymentController::class, 'getAllPayments']);
-Route::post('/student-payments-by-student', [StudentPaymentController::class, 'getStudentPayments']);
+// =====================================================
+// Student Payment Requests
+// =====================================================
+Route::post('/payments/store', [StudentPaymentController::class, 'store']);
+
+Route::get('/payments/student', [StudentPaymentController::class, 'getStudentPayments']);
+
+Route::get('/payments', [StudentPaymentController::class, 'index']);
+
+Route::post('/payments/approve', [StudentPaymentController::class, 'approvePayment']);
+
+Route::post('/payments/reject', [StudentPaymentController::class, 'rejectPayment']);
+
+Route::get('/student-payments', [StudentPaymentController::class, 'studentPaymentsIndex']);
