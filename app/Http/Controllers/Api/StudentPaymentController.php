@@ -95,22 +95,25 @@ public function studentPaymentsIndex()
         return response()->json($payments);
     }
 
-    // =====================================================
-    // اعتماد الدفع
-    // =====================================================
-    public function approvePayment(Request $request)
-    {
-        $request->validate([
-            'payment_id' => ['required', 'exists:payment_requests,id'],
-        ]);
+   public function update(Request $request)
+{
+    $request->validate([
+        'payment_id' => ['required', 'exists:payment_requests,id'],
+        'status' => ['sometimes', 'in:pending,approved,rejected'],
+        'rejection_reason' => ['nullable', 'string'],
+    ]);
 
-        $paymentRequest = PaymentRequest::findOrFail(
-            $request->payment_id
-        );
+    $paymentRequest = PaymentRequest::findOrFail(
+        $request->payment_id
+    );
 
-        $paymentRequest->update([
-            'status' => 'approved',
-        ]);
+    $paymentRequest->update([
+        'status' => $request->status ?? $paymentRequest->status,
+        'rejection_reason' => $request->rejection_reason ?? $paymentRequest->rejection_reason,
+    ]);
+
+    // إذا صار Approved
+    if ($request->status === 'approved') {
 
         StudentPayment::updateOrCreate(
             [
@@ -123,37 +126,11 @@ public function studentPaymentsIndex()
                 'amount' => $paymentRequest->amount,
             ]
         );
-
-        return response()->json([
-            'message' => 'تم اعتماد الدفع بنجاح',
-            'payment_id' => $paymentRequest->id,
-            'status' => 'approved',
-        ]);
     }
 
-    // =====================================================
-    // رفض الدفع
-    // =====================================================
-    public function rejectPayment(Request $request)
-    {
-        $request->validate([
-            'payment_id' => ['required', 'exists:payment_requests,id'],
-            'rejection_reason' => ['required', 'string'],
-        ]);
-
-        $paymentRequest = PaymentRequest::findOrFail(
-            $request->payment_id
-        );
-
-        $paymentRequest->update([
-            'status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
-        ]);
-
-        return response()->json([
-            'message' => 'تم رفض الدفع',
-            'payment_id' => $paymentRequest->id,
-            'status' => 'rejected',
-        ]);
-    }
+    return response()->json([
+        'message' => 'تم تحديث الطلب بنجاح',
+        'payment_request' => $paymentRequest->fresh(),
+    ]);
+}
 }

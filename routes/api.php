@@ -233,8 +233,6 @@ Route::get('/payments/student', [StudentPaymentController::class, 'getStudentPay
 
 Route::get('/payments', [StudentPaymentController::class, 'index']);
 
-Route::post('/payments/approve', [StudentPaymentController::class, 'approvePayment']);
-
-Route::post('/payments/reject', [StudentPaymentController::class, 'rejectPayment']);
-
+Route::patch('/payments',[StudentPaymentController::class, 'update']
+);
 Route::get('/student-payments', [StudentPaymentController::class, 'studentPaymentsIndex']);
