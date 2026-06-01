@@ -97,13 +97,17 @@ public function update(Request $request, $id)
 
     $trip->update($request->except('student_ids'));
 
-  $students = [];
+    // Get existing student pivots to preserve their boarding status (e.g. present, absent)
+    $existingPivots = $trip->students()->pluck('status', 'student_id')->toArray();
 
-foreach ($request->student_ids ?? [] as $studentId) {
-    $students[$studentId] = ['status' => 'approved'];
-}
+    $students = [];
+    foreach ($request->student_ids ?? [] as $studentId) {
+        // Preserve existing status if already in trip, otherwise default to 'assigned'
+        $status = $existingPivots[$studentId] ?? 'assigned';
+        $students[$studentId] = ['status' => $status];
+    }
 
-$trip->students()->syncWithoutDetaching($students);
+    $trip->students()->sync($students);
     return response()->json([
         'status' => true,
         'message' => 'Trip updated successfully',

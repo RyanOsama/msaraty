@@ -173,10 +173,12 @@ Route::post('/buses', [BusController::class, 'store']);
 Route::patch('/buses/{bus}', [BusController::class, 'update']);
 Route::delete('/buses/{bus}', [BusController::class, 'destroy']);
 
+
+
 use App\Http\Controllers\Api\NotificationController;
 
 Route::get('notifications', [NotificationController::class, 'index']);
-Route::post('/send-notification', [NotificationController::class, 'send']);
+Route::post('notification', [NotificationController::class, 'send']);
 Route::patch('notifications/{notification}', [NotificationController::class, 'update']);
 Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
 
@@ -229,7 +231,6 @@ use App\Http\Controllers\Api\StudentPaymentController;
 // =====================================================
 Route::post('/payments/store', [StudentPaymentController::class, 'store']);
 
-Route::get('/payments/student', [StudentPaymentController::class, 'getStudentPayments']);
 
 Route::get('/payments', [StudentPaymentController::class, 'index']);
 

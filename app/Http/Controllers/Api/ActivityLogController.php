@@ -37,7 +37,7 @@ class ActivityLogController extends Controller
         ]);
 
         $log = ActivityLog::create([
-            'user_id'    => auth()->id(),
+            'user_id'    => auth()->id() ?? $request->user_id,
             'action'     => $request->action,
             'record_id'  => $request->record_id,
             'description'=> $request->description,
