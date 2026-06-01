@@ -10,14 +10,16 @@ class GenerateMonthlyStudentPayments extends Command
 {
     protected $signature = 'payments:generate';
 
-    protected $description = 'Generate monthly payments for active students';
+    protected $description = 'Generate monthly payments';
 
     public function handle()
     {
         $month = now()->format('Y-m');
 
-        // الطلاب النشطين فقط
-        $students = Student::whereRaw('LOWER(state) = ?', ['active'])->get();
+        $students = Student::where(
+            'state',
+            'active'
+        )->get();
 
         foreach ($students as $student) {
 
@@ -33,6 +35,10 @@ class GenerateMonthlyStudentPayments extends Command
             );
         }
 
-        $this->info('Monthly student payments generated successfully.');
+        $this->info(
+            'Monthly payments generated'
+        );
+
+        return Command::SUCCESS;
     }
 }
