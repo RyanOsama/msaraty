@@ -19,7 +19,8 @@ public function index()
         return [
             'id' => $level->id,
             'level_name' => $level->level_name,
-            'department_id' => $level->departments->first()?->id
+            'department_id' => $level->departments->first()?->id,
+            'department_ids' => $level->departments->pluck('id')->toArray()
         ];
     });
 
@@ -49,16 +50,24 @@ public function index()
 {
     $request->validate([
         'level_name' => 'required',
+        'department_ids' => 'required|array',
+        'department_ids.*' => 'exists:departments,id'
     ]);
 
     $level = Level::create([
         'level_name' => $request->level_name
     ]);
 
+    $level->departments()->sync($request->department_ids);
+
     return response()->json([
         'status' => true,
         'message' => 'Level created successfully',
-        'data' => $level
+        'data' => [
+            'id' => $level->id,
+            'level_name' => $level->level_name,
+            'department_ids' => $request->department_ids
+        ]
     ], 201);
 }
     // تحديث مستوى
@@ -75,16 +84,24 @@ public function index()
 
     $request->validate([
         'level_name' => 'required',
+        'department_ids' => 'required|array',
+        'department_ids.*' => 'exists:departments,id'
     ]);
 
     $level->update([
         'level_name' => $request->level_name
     ]);
 
+    $level->departments()->sync($request->department_ids);
+
     return response()->json([
         'status' => true,
         'message' => 'Level updated successfully',
-        'data' => $level
+        'data' => [
+            'id' => $level->id,
+            'level_name' => $level->level_name,
+            'department_ids' => $request->department_ids
+        ]
     ], 200);
 }
     // حذف مستوى
