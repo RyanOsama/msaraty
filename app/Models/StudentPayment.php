@@ -9,16 +9,17 @@ class StudentPayment extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'receipt_image',
-        'bank_name',
-        'receipt_number',
-        'amount',
-        'status',
-        'student_id',
-        'rejection_reason',
-        'for_month',
-    ];
+  protected $fillable = [
+    'receipt_image',
+    'bank_name',
+    'receipt_number',
+    'amount',
+    'status',
+    'student_id',
+    'payment_request_id', // ← أضفه
+    'rejection_reason',
+    'for_month',
+];
 
     // 🔗 العلاقة مع الطالب
     public function student()
