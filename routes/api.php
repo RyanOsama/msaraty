@@ -229,7 +229,7 @@ use App\Http\Controllers\Api\StudentPaymentController;
 // =====================================================
 // Student Payment Requests
 // =====================================================
-Route::post('/payments/store', [StudentPaymentController::class, 'store']);
+Route::post('/payments', [StudentPaymentController::class, 'store']);
 
 
 Route::get('/payments', [StudentPaymentController::class, 'index']);
