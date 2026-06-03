@@ -133,4 +133,24 @@ public function studentPaymentsIndex()
         'payment_request' => $paymentRequest->fresh(),
     ]);
 }
+public function destroy($id)
+{
+    $payment = PaymentRequest::findOrFail($id);
+
+    // إذا فيه ربط بجدول الدفعات نفكه
+    StudentPayment::where(
+        'payment_request_id',
+        $payment->id
+    )->update([
+        'payment_request_id' => null,
+        'status' => 'unpaid',
+    ]);
+
+    // حذف الطلب
+    $payment->delete();
+
+    return response()->json([
+        'message' => 'تم حذف طلب الدفع بنجاح'
+    ]);
+}
 }

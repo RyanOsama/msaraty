@@ -237,3 +237,4 @@ Route::get('/payments', [StudentPaymentController::class, 'index']);
 Route::patch('/payments',[StudentPaymentController::class, 'update']
 );
 Route::get('/student-payments', [StudentPaymentController::class, 'studentPaymentsIndex']);
+Route::delete('/payments/{id}',[StudentPaymentController::class, 'destroy']);
