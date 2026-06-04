@@ -73,7 +73,6 @@ public function store(Request $request)
     ], 201);}
 
 
-
 public function update(Request $request, $id)
 {
     $user = \App\Models\User::find($id);
@@ -85,24 +84,37 @@ public function update(Request $request, $id)
     }
 
     $request->validate([
-        'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
-        'role_id'  => 'sometimes|exists:roles,id',
-        'status'   => 'sometimes|in:pending,approved,rejected',
+        'username'  => 'sometimes|string|max:255|unique:users,username,' . $user->id,
+        'full_name' => 'sometimes|string|max:255',
+        'phone'     => 'sometimes|string|max:20',
+        'password'  => 'sometimes|string|min:6',
+        'role_id'   => 'sometimes|exists:roles,id',
+        'status'    => 'sometimes|in:pending,approved,rejected',
     ]);
 
-    $user->update($request->only([
+    $data = $request->only([
         'username',
+        'full_name',
+        'phone',
         'role_id',
-        'status'
-    ]));
+        'status',
+    ]);
+
+    // تحديث الرقم السري إذا انرسل
+    if ($request->filled('password')) {
+        $data['password'] =
+            bcrypt(
+                $request->password
+            );
+    }
+
+    $user->update($data);
 
     return response()->json([
         'message' => 'تم تعديل المستخدم بنجاح',
-        'user' => $user
-    ], 200);
+        'user' => $user->fresh()
+    ]);
 }
-
-
 
 
     

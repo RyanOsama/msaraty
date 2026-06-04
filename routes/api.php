@@ -52,6 +52,13 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/check-status', [AuthController::class, 'checkStatus']);
 
+Route::patch('/users/{id}',[UserController::class, 'update']);
+
+
+
+
+
+
 
 
 
@@ -241,3 +248,6 @@ Route::get('/student-payments', [StudentPaymentController::class, 'studentPaymen
 Route::delete('/payments/{id}',[StudentPaymentController::class, 'destroy']);
 
 Route::post('/student-payments',[StudentPaymentController::class, 'getStudentPayments']);
+
+
+Route::patch('/student-payments/{id}',[StudentPaymentController::class,'updateStudentPayment']);

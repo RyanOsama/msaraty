@@ -153,4 +153,68 @@ public function destroy($id)
         'message' => 'تم حذف طلب الدفع بنجاح'
     ]);
 }
+
+
+
+
+
+
+
+
+public function updateStudentPayment(
+    Request $request,
+    $id
+)
+{
+    $payment =
+        StudentPayment::find($id);
+
+    if (!$payment) {
+
+        return response()->json([
+            'message' =>
+                'سجل الدفع غير موجود'
+        ], 404);
+
+    }
+
+    $request->validate([
+
+        'payment_request_id' =>
+            'sometimes|nullable|exists:payment_requests,id',
+
+        'amount' =>
+            'sometimes|numeric|min:0',
+
+        'for_month' =>
+            'sometimes|string',
+
+        'status' =>
+            'sometimes|in:unpaid,paid',
+
+    ]);
+
+    $payment->update(
+
+        $request->only([
+
+            'payment_request_id',
+            'amount',
+            'for_month',
+            'status'
+
+        ])
+
+    );
+
+    return response()->json([
+
+        'message' =>
+            'تم تعديل سجل الدفع بنجاح',
+
+        'payment' =>
+            $payment->fresh()
+
+    ], 200);
+}
 }
