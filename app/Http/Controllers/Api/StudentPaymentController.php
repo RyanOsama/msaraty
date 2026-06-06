@@ -95,24 +95,35 @@ public function studentPaymentsIndex()
         return response()->json($payments);
     }
 
-   public function update(Request $request)
+ public function update(Request $request, $id)
 {
     $request->validate([
-        'payment_id' => ['required', 'exists:payment_requests,id'],
         'status' => ['sometimes', 'in:pending,approved,rejected'],
         'rejection_reason' => ['nullable', 'string'],
+        'amount' => ['sometimes', 'numeric'],
+        'for_month' => ['sometimes', 'date_format:Y-m'],
     ]);
 
-    $paymentRequest = PaymentRequest::findOrFail(
-        $request->payment_id
-    );
+    $paymentRequest = PaymentRequest::findOrFail($id);
 
     $paymentRequest->update([
-        'status' => $request->status ?? $paymentRequest->status,
-        'rejection_reason' => $request->rejection_reason ?? $paymentRequest->rejection_reason,
+        'status' =>
+            $request->status
+            ?? $paymentRequest->status,
+
+        'rejection_reason' =>
+            $request->rejection_reason
+            ?? $paymentRequest->rejection_reason,
+
+        'amount' =>
+            $request->amount
+            ?? $paymentRequest->amount,
+
+        'for_month' =>
+            $request->for_month
+            ?? $paymentRequest->for_month,
     ]);
 
-    // إذا صار Approved
     if ($request->status === 'approved') {
 
         StudentPayment::updateOrCreate(
@@ -215,6 +226,25 @@ public function updateStudentPayment(
         'payment' =>
             $payment->fresh()
 
+    ], 200);
+}
+
+
+
+public function destroy_student_payment($id)
+{
+    $payment = StudentPayment::find($id);
+
+    if (!$payment) {
+        return response()->json([
+            'message' => 'Payment not found'
+        ], 404);
+    }
+
+    $payment->delete();
+
+    return response()->json([
+        'message' => 'Payment deleted successfully'
     ], 200);
 }
 }

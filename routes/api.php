@@ -241,7 +241,7 @@ Route::post('/payments', [StudentPaymentController::class, 'store']);
 
 Route::get('/payments', [StudentPaymentController::class, 'index']);
 
-Route::patch('/payments',[StudentPaymentController::class, 'update']
+Route::patch('/payments/{id}',[StudentPaymentController::class, 'update']
 );
 Route::get('/student-payments', [StudentPaymentController::class, 'studentPaymentsIndex']);
 
@@ -251,3 +251,4 @@ Route::post('/student-payments',[StudentPaymentController::class, 'getStudentPay
 
 
 Route::patch('/student-payments/{id}',[StudentPaymentController::class,'updateStudentPayment']);
+Route::delete('/student-payments/{id}', [StudentPaymentController::class, 'destroy_student_payment']);
