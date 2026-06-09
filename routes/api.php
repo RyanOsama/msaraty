@@ -252,3 +252,23 @@ Route::post('/student-payments',[StudentPaymentController::class, 'getStudentPay
 
 Route::patch('/student-payments/{id}',[StudentPaymentController::class,'updateStudentPayment']);
 Route::delete('/student-payments/{id}', [StudentPaymentController::class, 'destroy_student_payment']);
+
+
+
+
+use App\Http\Controllers\API\DriverSalaryController;
+
+Route::post(
+'/driver-salaries',
+[DriverSalaryController::class,'store']
+);
+
+Route::patch(
+'/driver-salaries/{id}',
+[DriverSalaryController::class,'update']
+);
+
+Route::delete(
+'/driver-salaries/{id}',
+[DriverSalaryController::class,'destroy']
+);

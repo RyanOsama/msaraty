@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
+
 use App\Models\StudentPayment;
+use App\Models\DriverSalary;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,29 +21,61 @@ class AppServiceProvider extends ServiceProvider
 
             if (!app()->runningInConsole()) {
 
-                $month = now()->format('Y-m');
+                $month =
+                    now()->format(
+                        'Y-m'
+                    );
 
-                $exists = StudentPayment::where(
-                    'for_month',
-                    $month
-                )->exists();
+                // ==================
+                // دفعات الطلاب
+                // ==================
 
-                if (!$exists) {
+                $studentExists =
+                    StudentPayment::where(
+                        'for_month',
+                        $month
+                    )->exists();
+
+                if (
+                    !$studentExists
+                ) {
 
                     Artisan::call(
                         'payments:generate'
                     );
+
                 }
+
+
+                // ==================
+                // رواتب السواقين
+                // ==================
+
+                $driverExists =
+                    DriverSalary::where(
+                        'for_month',
+                        $month
+                    )->exists();
+
+                if (
+                    !$driverExists
+                ) {
+
+                    Artisan::call(
+                        'drivers:generate-salaries'
+                    );
+
+                }
+
             }
 
         } catch (\Throwable $e) {
 
-            \Log::error(
-                'Auto payments failed',
-                [
-                    'error' => $e->getMessage()
-                ]
-            );
+            \Log::error([
+                'auto_generate_error' =>
+                    $e->getMessage()
+            ]);
+
         }
     }
 }

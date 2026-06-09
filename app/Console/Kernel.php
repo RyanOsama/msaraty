@@ -10,11 +10,20 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
-    {
-        $schedule->command('payments:generate')
-            ->monthlyOn(1, '00:01');
-    }
+   protected function schedule(Schedule $schedule): void
+{
+    // دفعات الطلاب
+    $schedule->command(
+        'payments:generate'
+    )
+    ->daily();
+
+    // رواتب السائقين
+    $schedule->command(
+        'drivers:generate-salaries'
+    )
+    ->daily();
+}
 
     /**
      * Register the commands for the application.
