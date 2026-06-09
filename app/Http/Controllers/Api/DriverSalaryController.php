@@ -9,6 +9,20 @@ use App\Models\DriverSalary;
 class DriverSalaryController extends Controller
 {
 
+public function index()
+{
+    $salaries =
+        DriverSalary::with(
+            'driver'
+        )
+        ->latest()
+        ->get();
+
+    return response()->json(
+        $salaries
+    );
+}
+
     // ====================
     // إضافة راتب
     // ====================

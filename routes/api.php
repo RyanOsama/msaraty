@@ -258,6 +258,11 @@ Route::delete('/student-payments/{id}', [StudentPaymentController::class, 'destr
 
 use App\Http\Controllers\API\DriverSalaryController;
 
+Route::get(
+'/driver-salaries',
+[DriverSalaryController::class,'index']
+);
+
 Route::post(
 '/driver-salaries',
 [DriverSalaryController::class,'store']
