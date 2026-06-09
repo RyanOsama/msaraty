@@ -255,7 +255,6 @@ Route::delete('/student-payments/{id}', [StudentPaymentController::class, 'destr
 
 
 
-
 use App\Http\Controllers\API\DriverSalaryController;
 
 Route::get(
