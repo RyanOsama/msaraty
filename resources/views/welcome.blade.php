@@ -238,7 +238,7 @@
                 <div class="sub-card" style="grid-column: span 1; grid-column-end: -1; grid-column-start: 1;">
                     <h3>فكرة المشروع / Project</h3>
                     <p style="margin: 0; line-height: 1.5; font-size: 0.9rem;">
-                        نظام ذكي لإدارة النقل الجامعي يربط الطلاب بالباصات والمسارات بشكل منظم لتحسين كفاءة الرحلات.
+                        نظام ذكي جدا لإدارة النقل الجامعي يربط الطلاب بالباصات والمسارات بشكل منظم لتحسين كفاءة الرحلات.
                     </p>
                 </div>
 

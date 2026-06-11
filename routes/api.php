@@ -255,24 +255,24 @@ Route::delete('/student-payments/{id}', [StudentPaymentController::class, 'destr
 
 
 
-use App\Http\Controllers\API\DriverSalaryController;
+use App\Http\Controllers\API\SalaryDriverController;
 
 Route::get(
 '/driver-salaries',
-[DriverSalaryController::class,'index']
+[SalaryDriverController::class,'index']
 );
 
 Route::post(
 '/driver-salaries',
-[DriverSalaryController::class,'store']
+[SalaryDriverController::class,'store']
 );
 
 Route::patch(
 '/driver-salaries/{id}',
-[DriverSalaryController::class,'update']
+[SalaryDriverController::class,'update']
 );
 
 Route::delete(
 '/driver-salaries/{id}',
-[DriverSalaryController::class,'destroy']
+[SalaryDriverController::class,'destroy']
 );

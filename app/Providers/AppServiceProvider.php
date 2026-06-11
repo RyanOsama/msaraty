@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
 
-use App\Models\StudentPayment;
 use App\Models\DriverSalary;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,51 +20,15 @@ class AppServiceProvider extends ServiceProvider
 
             if (!app()->runningInConsole()) {
 
-                $month =
-                    now()->format(
-                        'Y-m'
-                    );
-
-                // ==================
                 // دفعات الطلاب
-                // ==================
+                Artisan::call(
+                    'payments:generate'
+                );
 
-                $studentExists =
-                    StudentPayment::where(
-                        'for_month',
-                        $month
-                    )->exists();
-
-                if (
-                    !$studentExists
-                ) {
-
-                    Artisan::call(
-                        'payments:generate'
-                    );
-
-                }
-
-
-                // ==================
                 // رواتب السواقين
-                // ==================
-
-                $driverExists =
-                    DriverSalary::where(
-                        'for_month',
-                        $month
-                    )->exists();
-
-                if (
-                    !$driverExists
-                ) {
-
-                    Artisan::call(
-                        'drivers:generate-salaries'
-                    );
-
-                }
+                Artisan::call(
+                    'drivers:generate-salaries'
+                );
 
             }
 
