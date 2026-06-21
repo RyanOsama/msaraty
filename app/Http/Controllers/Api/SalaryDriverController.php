@@ -84,6 +84,13 @@ class SalaryDriverController extends Controller
             ])
 
         );
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل راتب سائق',
+            'record_id'   => $salary->id,
+            'description' => 'تم تعديل راتب السائق لشهر: ' . $salary->for_month,
+        ]);
 
         return response()->json([
 
@@ -106,6 +113,13 @@ class SalaryDriverController extends Controller
                 'message' => 'الراتب غير موجود'
             ], 404);
         }
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف راتب سائق',
+            'record_id'   => $id,
+            'description' => 'تم حذف راتب بقيمة: ' . $salary->amount,
+        ]);
 
         $salary->delete();
 

@@ -50,6 +50,13 @@ public function studentPaymentsIndex()
             'for_month' => $request->for_month,
             'status' => 'pending',
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تقديم طلب دفع جديد',
+            'record_id'   => $paymentRequest->id,
+            'description' => 'تم تقديم طلب دفع جديد بمبلغ: ' . $paymentRequest->amount,
+        ]);
 
         return response()->json([
             'message' => 'تم إنشاء طلب الدفع بنجاح',
@@ -138,6 +145,13 @@ public function studentPaymentsIndex()
             ]
         );
     }
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تحديث حالة طلب الدفع',
+        'record_id'   => $paymentRequest->id,
+        'description' => 'تم تحديث حالة طلب الدفع إلى: ' . $paymentRequest->status,
+    ]);
 
     return response()->json([
         'message' => 'تم تحديث الطلب بنجاح',
@@ -155,6 +169,13 @@ public function destroy($id)
     )->update([
         'payment_request_id' => null,
         'status' => 'unpaid',
+    ]);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم حذف طلب الدفع',
+        'record_id'   => $id,
+        'description' => 'تم حذف طلب الدفع بقيمة: ' . $payment->amount,
     ]);
 
     // حذف الطلب

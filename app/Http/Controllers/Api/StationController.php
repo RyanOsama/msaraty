@@ -46,6 +46,13 @@ class StationController extends Controller
             'location_y'  => $request->location_y,
             'description' => $request->description,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إضافة محطة',
+            'record_id'   => $station->id,
+            'description' => 'تم إضافة محطة جديدة باسم: ' . $station->station_name,
+        ]);
 
         return response()->json([
             'message' => 'تم إضافة المحطة بنجاح',
@@ -79,6 +86,13 @@ class StationController extends Controller
             'location_y'  => $request->location_y,
             'description' => $request->description,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل محطة',
+            'record_id'   => $station->id,
+            'description' => 'تم تعديل بيانات المحطة: ' . $station->station_name,
+        ]);
 
         return response()->json([
             'message' => 'تم تعديل المحطة بنجاح',
@@ -98,6 +112,13 @@ class StationController extends Controller
                 'message' => 'المحطة غير موجودة'
             ], 404);
         }
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف محطة',
+            'record_id'   => $id,
+            'description' => 'تم حذف المحطة: ' . $station->station_name,
+        ]);
 
         $station->delete();
 

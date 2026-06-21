@@ -67,6 +67,14 @@ foreach ($request->student_ids ?? [] as $studentId) {
 }
 
 $trip->students()->attach($students);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => $request->created_by ?? auth()->id(),
+        'action'      => 'تم إنشاء رحلة',
+        'record_id'   => $trip->id,
+        'description' => 'تم إنشاء رحلة جديدة باسم: ' . $trip->trip_name,
+    ]);
+
     return response()->json([
         'status' => true,
         'message' => 'Trip created successfully',
@@ -95,19 +103,40 @@ public function update(Request $request, $id)
         'student_ids.*' => 'exists:students,id',
     ]);
 
-    $trip->update($request->except('student_ids'));
+    // تحديث بيانات الرحلة فقط
+    $trip->update(
+        $request->except('student_ids')
+    );
 
-    // Get existing student pivots to preserve their boarding status (e.g. present, absent)
-    $existingPivots = $trip->students()->pluck('status', 'student_id')->toArray();
+    // لا تحدث الطلاب إلا إذا انرسلت student_ids
+    if ($request->has('student_ids')) {
 
-    $students = [];
-    foreach ($request->student_ids ?? [] as $studentId) {
-        // Preserve existing status if already in trip, otherwise default to 'assigned'
-        $status = $existingPivots[$studentId] ?? 'assigned';
-        $students[$studentId] = ['status' => $status];
+        $existingPivots = $trip
+            ->students()
+            ->pluck('status', 'student_id')
+            ->toArray();
+
+        $students = [];
+
+        foreach ($request->student_ids as $studentId) {
+
+            $students[$studentId] = [
+                'status' => $existingPivots[$studentId] ?? 'assigned'
+            ];
+        }
+
+        $trip
+            ->students()
+            ->sync($students);
     }
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => $request->created_by ?? auth()->id(),
+        'action'      => 'تم تعديل رحلة',
+        'record_id'   => $trip->id,
+        'description' => 'تم تعديل بيانات الرحلة: ' . $trip->trip_name,
+    ]);
 
-    $trip->students()->sync($students);
     return response()->json([
         'status' => true,
         'message' => 'Trip updated successfully',
@@ -127,13 +156,19 @@ public function destroy($id)
     }
 
     $trip->delete();
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم حذف رحلة',
+        'record_id'   => $trip->id,
+        'description' => 'تم حذف الرحلة: ' . $trip->trip_name,
+    ]);
 
     return response()->json([
         'status' => true,
         'message' => 'Trip deleted successfully'
     ]);
 }
-
 public function checkStudentTripByDate(Request $request)
 {
     $request->validate([
@@ -141,8 +176,8 @@ public function checkStudentTripByDate(Request $request)
         'date' => 'required|date',
     ]);
 
-    $trip = Trip::with([
-            'driver.user',   // 🔥 مهم عشان اسم السائق
+    $trips = Trip::with([
+            'driver.user',
             'bus',
             'assign.route'
         ])
@@ -150,9 +185,9 @@ public function checkStudentTripByDate(Request $request)
         ->whereHas('students', function ($q) use ($request) {
             $q->where('student_id', $request->student_id);
         })
-        ->first();
+        ->get();
 
-    if (!$trip) {
+    if ($trips->isEmpty()) {
         return response()->json([
             'status' => false,
             'message' => 'الطالب غير مسجل في أي رحلة بهذا التاريخ',
@@ -162,23 +197,29 @@ public function checkStudentTripByDate(Request $request)
     return response()->json([
         'status' => true,
 
-        'data' => [
-            'id' => $trip->id,
-            'trip_name' => $trip->trip_name,
-            'trip_type' => $trip->trip_type,
-            'trip_date' => $trip->trip_date,
-            'trip_time' => $trip->trip_time,
+        'data' => $trips->map(function ($trip) {
+            return [
 
-            // 🛣️ المسار
-            'route_name' => optional($trip->assign->route)->route_name,
+                'id' => $trip->id,
+                'trip_name' => $trip->trip_name,
+                'trip_type' => $trip->trip_type,
+                'trip_date' => $trip->trip_date,
+                'trip_time' => $trip->trip_time,
 
-            // 👨‍✈️ السائق (من جدول users)
-            'driver_name' => optional($trip->driver->user)->full_name,
-            'driver_phone' => optional($trip->driver->user)->phone,
+                // حالة الرحلة من جدول trips
+                'status' => $trip->status,
 
-            // 🚌 الباص
-            'bus_number_passengers' => optional($trip->bus)->number_passengers,
-        ]
+                // المسار
+                'route_name' => optional($trip->assign->route)->route_name,
+
+                // السائق
+                'driver_name' => optional($trip->driver->user)->full_name,
+                'driver_phone' => optional($trip->driver->user)->phone,
+
+                // الباص
+                'bus_number_passengers' => optional($trip->bus)->number_passengers,
+            ];
+        })->values()
     ]);
 }
 public function updateStudentStatus(Request $request)
@@ -273,13 +314,16 @@ public function checkDriverTripByDate(Request $request)
             }),
 
             // 👨‍🎓 الطلاب
-            'students' => $trip->students->map(function ($student) {
-                return [
-                    'id' => $student->id,
-                    'name' => optional($student->user)->full_name,
-                    'phone' => optional($student->user)->phone,
-                ];
-            }),
+          'students' => $trip->students->map(function ($student) {
+    return [
+        'id' => $student->id,
+        'name' => optional($student->user)->full_name,
+        'phone' => optional($student->user)->phone,
+
+        // الحالة من جدول trip_student
+        'status' => $student->pivot->status ?? null,
+    ];
+}),
         
     ]);
 }

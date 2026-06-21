@@ -49,6 +49,13 @@ class DepartmentController extends Controller
             'department_name' => $request->department_name,
             'college_id' => $request->college_id
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إنشاء قسم جديد',
+            'record_id'   => $department->id,
+            'description' => 'تم إنشاء قسم جديد باسم: ' . $department->department_name,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -78,6 +85,13 @@ class DepartmentController extends Controller
             'department_name' => $request->department_name,
             'college_id' => $request->college_id
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل بيانات القسم',
+            'record_id'   => $department->id,
+            'description' => 'تم تعديل بيانات القسم: ' . $department->department_name,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -92,6 +106,14 @@ public function destroy($id)
 {
     try {
         $department = Department::findOrFail($id);
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف القسم',
+            'record_id'   => $id,
+            'description' => 'تم حذف القسم: ' . $department->department_name,
+        ]);
+
         $department->delete();
 
         return response()->json([

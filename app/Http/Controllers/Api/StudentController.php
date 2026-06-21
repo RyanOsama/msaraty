@@ -157,7 +157,7 @@ public function show($id)
         ]);
         ActivityLog::create([
 'user_id' => $request->user_id,
-    'action' => 'create_student',
+    'action' => 'تم إضافة طالب',
     'record_id' => $student->id,
     'description' => 'تم إنشاء طالب جديد',
 ]);
@@ -224,7 +224,7 @@ public function show($id)
     ]);
 ActivityLog::create([
 'user_id' => $request->user_id,
-    'action' => 'update_student',
+    'action' => 'تم تعديل بيانات الطالب',
     'record_id' => $student->id,
     'description' => 'تم تعديل بيانات الطالب',
 ]);
@@ -279,30 +279,41 @@ ActivityLog::create([
 }
 
     // حذف طالب
-    public function destroy($id)
-    {
-        $student = Student::find($id);
+  public function destroy(Request $request, $id)
+{
+    $student = Student::find($id);
 
-        if (!$student) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Student not found'
-            ], 404);
-        }
+    if (!$student) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Student not found'
+        ], 404);
+    }
 
-        $student->delete();
+    // خزّن ID قبل الحذف
+    $studentId = $student->id;
 
- ActivityLog::create([
-        'user_id' => $request->user_id,
-        'action' => 'delete_student',
-        'record_id' => $student->id,
+    $student->delete();
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم حذف طالب',
+        'record_id'   => $id,
         'description' => 'تم حذف الطالب',
     ]);
-        return response()->json([
-            'status' => true,
-            'message' => 'Student deleted successfully'
-        ], 200);
-    }
+
+    ActivityLog::create([
+        'user_id' => $request->user_id, // أو auth()->id()
+        'action' => 'delete_student',
+        'record_id' => $studentId,
+        'description' => 'تم حذف الطالب',
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Student deleted successfully'
+    ], 200);
+}
 
 
 

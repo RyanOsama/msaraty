@@ -125,13 +125,19 @@ public function update(Request $request, $id)
 public function destroy($id)
 {
     $user = User::find($id);
+   
 
     if (!$user) {
         return response()->json([
             'message' => 'المستخدم غير موجود'
         ], 404);
     }
-
+     \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'delete_user',
+            'record_id'   => $id,
+            'description' => 'تم حذف المستخدم: ' . $user->name,
+        ]);
     $user->delete();
 
     return response()->json([

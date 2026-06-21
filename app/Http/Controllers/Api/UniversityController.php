@@ -56,6 +56,13 @@ class UniversityController extends Controller
         $university = University::create([
             'university_name' => $request->university_name
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إضافة جامعة',
+            'record_id'   => $university->id,
+            'description' => 'تم إضافة جامعة جديدة باسم: ' . $university->university_name,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -83,6 +90,13 @@ class UniversityController extends Controller
         $university->update([
             'university_name' => $request->university_name
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل جامعة',
+            'record_id'   => $university->id,
+            'description' => 'تم تعديل اسم الجامعة إلى: ' . $university->university_name,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -97,6 +111,14 @@ public function destroy($id)
 {
     try {
         $university = University::findOrFail($id);
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف جامعة',
+            'record_id'   => $id,
+            'description' => 'تم حذف الجامعة: ' . $university->university_name,
+        ]);
+
         $university->delete();
 
         return response()->json([

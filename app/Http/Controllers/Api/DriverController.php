@@ -43,6 +43,13 @@ class DriverController extends Controller
             'state' => $request->state,
             'user_id' => $request->user_id,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إضافة سائق جديد',
+            'record_id'   => $driver->id,
+            'description' => 'تم تعيين مستخدم كـ سائق جديد برقم مستخدم: ' . $driver->user_id,
+        ]);
 
         return response()->json($driver, 201);
     }
@@ -72,6 +79,13 @@ class DriverController extends Controller
 
     // تحميل العلاقة
     $driver->load('user');
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تعديل سائق',
+        'record_id'   => $driver->id,
+        'description' => 'تم تعديل بيانات السائق: ' . ($driver->user->full_name ?? 'غير معروف'),
+    ]);
 
     return response()->json([
         'message' => 'تم تعديل السائق بنجاح',
@@ -88,6 +102,14 @@ class DriverController extends Controller
     // حذف سائق
     public function destroy(Driver $driver)
     {
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => ' تم حذف سائق',
+            'record_id'   => $driver->id,
+            'description' => 'تم حذف السائق: ' . ($driver->user->full_name ?? 'غير معروف'),
+        ]);
+
         $driver->delete();
 
         return response()->json([

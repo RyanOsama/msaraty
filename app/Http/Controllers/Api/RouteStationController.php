@@ -73,6 +73,13 @@ class RouteStationController extends Controller
             ]
         );
     }
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تعيين محطات',
+        'record_id'   => $request->route_id,
+        'description' => 'تم تعيين محطات للمسار رقم: ' . $request->route_id,
+    ]);
 
     return response()->json([
         'status'  => true,
@@ -107,6 +114,13 @@ public function updateOrder(Request $request, $routeId)
             ]
         );
     }
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تحديث محطات المسار',
+        'record_id'   => $routeId,
+        'description' => 'تم تحديث ترتيب وتعيين محطات المسار رقم: ' . $routeId,
+    ]);
 
     return response()->json([
         'status' => true,
@@ -124,6 +138,13 @@ public function destroy($route_id)
             'message' => 'لا توجد محطات مرتبطة بهذا المسار'
         ], 404);
     }
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم حذف محطات المسار',
+        'record_id'   => $route_id,
+        'description' => 'تم حذف جميع المحطات المرتبطة بالمسار رقم: ' . $route_id,
+    ]);
 
     return response()->json([
         'status' => true,

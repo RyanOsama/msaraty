@@ -49,6 +49,13 @@ class CollegeController extends Controller
             'college_name' => $request->college_name,
             'university_id' => $request->university_id,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إنشاء كلية جديدة',
+            'record_id'   => $college->id,
+            'description' => 'تم إنشاء كلية جديدة باسم: ' . $college->college_name,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -79,6 +86,14 @@ class CollegeController extends Controller
             'university_id' => $request->university_id,
         ]);
 
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل بيانات الكلية',
+            'record_id'   => $college->id,
+            'description' => 'تم تعديل بيانات الكلية: ' . $college->college_name,
+        ]);
+
         return response()->json([
             'status' => true,
             'message' => 'College updated successfully',
@@ -92,6 +107,14 @@ public function destroy($id)
 {
     try {
         $college = College::findOrFail($id);
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف الكلية',
+            'record_id'   => $id,
+            'description' => 'تم حذف الكلية: ' . $college->college_name,
+        ]);
+
         $college->delete();
 
         return response()->json([

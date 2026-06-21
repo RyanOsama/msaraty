@@ -44,6 +44,13 @@ public function store(Request $request)
         'date' => $request->date,
         'type' => $request->type,
     ]);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تقديم طلب غياب',
+        'record_id'   => $absence->id,
+        'description' => 'تم تقديم طلب غياب ليوم: ' . $absence->date,
+    ]);
 
     return response()->json([
         'id' => $absence->id,

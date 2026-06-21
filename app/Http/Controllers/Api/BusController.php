@@ -34,6 +34,13 @@ class BusController extends Controller
             'type_fuel' => $request->type_fuel,
             'driver_id' => $request->driver_id,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'انشاء باص',
+            'record_id'   => $bus->id,
+            'description' => 'تم إضافة باص جديد باسم: ' . $bus->name,
+        ]);
 
         return response()->json($bus, 201);
     }
@@ -56,6 +63,14 @@ class BusController extends Controller
         'type_fuel',
         'driver_id'
     ]));
+        // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تعديل باص',
+        'record_id'   => $bus->id,
+        'description' => 'تم تعديل بيانات الباص: ' . $bus->name,
+    ]);
+
 
     return response()->json([
         'message' => 'تم تعديل الباص بنجاح',
@@ -66,6 +81,14 @@ class BusController extends Controller
     // حذف باص
     public function destroy(Bus $bus)
     {
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف باص',
+            'record_id'   => $bus->id,
+            'description' => 'تم حذف الباص: ' . $bus->name,
+        ]);
+
         $bus->delete();
 
         return response()->json([

@@ -28,6 +28,13 @@ class RouteController extends Controller
     $route = Route::create([
         'route_name' => $request->route_name,
     ]);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم إنشاء مسار جديد',
+        'record_id'   => $route->id,
+        'description' => 'تم إنشاء مسار جديد باسم: ' . $route->route_name,
+    ]);
 
     return response()->json($route, 201);
 }
@@ -42,6 +49,13 @@ class RouteController extends Controller
         $route->update([
             'route_name' => $request->route_name,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل المسار',
+            'record_id'   => $route->id,
+            'description' => 'تم تعديل اسم المسار إلى: ' . $route->route_name,
+        ]);
 
         return response()->json([
             'message' => 'تم تعديل الخط بنجاح',
@@ -52,6 +66,14 @@ class RouteController extends Controller
     // حذف خط
     public function destroy(Route $route)
     {
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف المسار',
+            'record_id'   => $route->id,
+            'description' => 'تم حذف المسار: ' . $route->route_name,
+        ]);
+
         $route->delete();
 
         return response()->json([

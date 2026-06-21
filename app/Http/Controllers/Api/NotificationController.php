@@ -37,6 +37,13 @@ class NotificationController extends Controller
             'target_group' => $request->target_group,
             'type' => $request->type,
         ]);
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم إنشاء إشعار جديد',
+            'record_id'   => $notification->id,
+            'description' => 'تم إنشاء إشعار جديد بعنوان: ' . $notification->title,
+        ]);
 
         return response()->json($notification, 201);
     }
@@ -59,6 +66,13 @@ class NotificationController extends Controller
             'target_group',
             'type'
         ]));
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم تعديل إشعار',
+            'record_id'   => $notification->id,
+            'description' => 'تم تعديل الإشعار: ' . $notification->title,
+        ]);
 
         return response()->json([
             'message' => 'تم تعديل الاشعار بنجاح',
@@ -69,6 +83,14 @@ class NotificationController extends Controller
     // حذف إشعار
     public function destroy(Notification $notification)
     {
+                // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف إشعار',
+            'record_id'   => $notification->id,
+            'description' => 'تم حذف الإشعار: ' . $notification->title,
+        ]);
+
         $notification->delete();
 
         return response()->json([

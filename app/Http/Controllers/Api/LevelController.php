@@ -59,6 +59,13 @@ public function index()
     ]);
 
     $level->departments()->sync($request->department_ids);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم إنشاء مستوى جديد',
+        'record_id'   => $level->id,
+        'description' => 'تم إنشاء مستوى جديد باسم: ' . $level->level_name,
+    ]);
 
     return response()->json([
         'status' => true,
@@ -93,6 +100,13 @@ public function index()
     ]);
 
     $level->departments()->sync($request->department_ids);
+    // تسجيل العملية في سجل النظام
+    \App\Models\ActivityLog::create([
+        'user_id'     => request()->user_id ?? auth()->id(),
+        'action'      => 'تم تعديل مستوى',
+        'record_id'   => $level->id,
+        'description' => 'تم تعديل بيانات المستوى: ' . $level->level_name,
+    ]);
 
     return response()->json([
         'status' => true,
@@ -111,6 +125,13 @@ public function destroy($id)
     try {
         $level = Level::findOrFail($id);
         $level->delete();
+        // تسجيل العملية في سجل النظام
+        \App\Models\ActivityLog::create([
+            'user_id'     => request()->user_id ?? auth()->id(),
+            'action'      => 'تم حذف مستوى',
+            'record_id'   => $id,
+            'description' => 'تم حذف المستوى: ' . $level->level_name,
+        ]);
 
         return response()->json([
             'status' => true,
